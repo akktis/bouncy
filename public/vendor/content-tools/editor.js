@@ -62,12 +62,31 @@ window.addEventListener('load', function() {
 			'afterShow':function() {
 				var iframe = $(this.content[1]);
 				var input = this.content.find('input');
-				this.content.find('button').on('click', function() {
+				var insert = this.content.find('button.btn-insert');
+				this.content.find('button.btn-go').on('click', function() {
 					console.log(iframe[0].src="/bouncer/admin/public/admin/download?url="+input.val());
-				})
+				});
+				
+				insert.on('click', function() {
+					 cursor = selection.get()[0] + 1;
+					 tip = element.content.substring(0, selection.get()[0]);
+					 tail = element.content.substring(selection.get()[1]);
+					 //(iframe[0].contentDocument || iframe[0].contentWindow.document).body.innerHTML
+					 
+					 var id = "site_"+Math.floor((Math.random() * 999999) + 1);;
+					 br = new HTMLString.String('<br><div id="'+id+'"></div>', element.content.preserveWhitespace());
+					 
+					 element.content = tip.concat(br, tail);
+					 element.updateInnerHTML();
+					 element.taint();
+					 selection.set(cursor, cursor);
+					 element.selection(selection);
+					 
+					 $("#"+id).html((iframe[0].contentDocument || iframe[0].contentWindow.document).body.innerHTML);
+				});
 			},
 			'tpl': {
-				'iframe':'<div>URL: <input type="text" placeholder="http://youtube.fr"><button class="btn">Go</button></div><iframe id="fancybox-frame{rnd}" name="fancybox-frame{rnd}" class="fancybox-iframe" frameborder="0" vspace="0" hspace="0"></iframe>'
+				'iframe':'<div>URL: <input type="text" placeholder="http://youtube.fr"><button class="btn btn-go">Go</button><button class="btn btn-insert">insert</button></div><iframe id="fancybox-frame{rnd}" name="fancybox-frame{rnd}" class="fancybox-iframe" frameborder="0" vspace="0" hspace="0"></iframe>'
 				//wrap     : '<div class="fancybox-wrap" tabIndex="-1"><div class="fancybox-skin"><div class="fancybox-outer"><div class="fancybox-inner"></div></div></div></div>',
 				//image    : '<img class="fancybox-image" src="{href}" alt="" />',
 				//iframe   : '<iframe id="fancybox-frame{rnd}" name="fancybox-frame{rnd}" class="fancybox-iframe" frameborder="0" vspace="0" hspace="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen' + (IE ? ' allowtransparency="true"' : '') + '></iframe>',

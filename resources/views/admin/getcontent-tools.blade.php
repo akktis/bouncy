@@ -51,7 +51,7 @@
 	<body>
 		<script src="../vendor/jquery.js"></script>
 		<script src="../vendor/fancybox/jquery.fancybox.js"></script>
-		<script src="../vendor/content-tools/content-tools.min.js"></script>
+		<script src="../vendor/content-tools/content-tools.js"></script>
 		<script src="../vendor/content-tools/editor.js"></script>
 		
 		<div data-editable data-name="main-content">
