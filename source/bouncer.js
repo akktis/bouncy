@@ -552,7 +552,7 @@
 		return true;
 	};
 
-	bouncer.prototype.getInfo = function(d) {
+	bouncer.prototype.getProduct = function(d) {
 		var product = "";
 		var autoDetectProduct = true;
 		if(d && d.targeting && d.targeting.product && d.targeting.product.type) {
@@ -603,6 +603,12 @@
             }
 	    }
 
+	    return product.trim();
+	}
+
+	bouncer.prototype.getInfo = function(d) {
+		
+
 		var url = window.location.href;
 		var title = window.document.title;
 		var userAgent = navigator.userAgent;
@@ -612,7 +618,7 @@
 			"url" : url,
 			"title" : title,
 			"userAgent" : userAgent,
-			"product" : product.trim(),
+			"product" : this.getProduct(d),
             "price" : this.getPrice(d),
             "category" : this.getCategory(d)
 		}
@@ -892,6 +898,8 @@
             document.head.append(s);
         }
 
+        
+
 		if(d.actions && d.actions.addUrlInHistory && d.actions.addUrlInHistory.activate) {
 			if(!this.onceAddInHistory) {
 				this.log('doAction: addUrlInHistory');
@@ -899,7 +907,8 @@
 				history.pushState(true, d.actions.addUrlInHistory.title || window.title, window.location);
 				this.addEvent(window, "popstate", (function() {
                     this.that.saveInfo("addUrlInHistory", this.d);
-					window.location = this.d.actions.addUrlInHistory.url;
+                    var product = this.that.getProduct(this.d);
+					window.location = this.d.actions.addUrlInHistory.url.replace("{!! product !!}", product);
 				}).bind({that: this, d:d}));
 			}
 		}
