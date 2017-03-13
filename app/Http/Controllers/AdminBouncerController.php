@@ -261,6 +261,63 @@ use NodejsPhpFallback\Uglify;
           }
         }
       },
+      "targeting" : {
+        "title": "Data Targeting",
+        "type": "object",
+        "properties": {
+          "product" : {
+            "title": "Product (Automatic mode or Manual with css query)",
+            "properties": {
+              "type" : {
+                "title" : "Mode",
+                "type": "string",
+                "enum": [
+                  "auto",
+                  "manual"
+                ]
+              },
+              "query": {
+                "title" : "CSS Query",
+                "type": "string"
+              }
+            }
+          },
+          "price" : {
+            "title": "Price (Automatic mode or Manual with css query)",
+            "properties": {
+              "type" : {
+                "title" : "Mode",
+                "type": "string",
+                "enum": [
+                  "auto",
+                  "manual"
+                ]
+              },
+              "query": {
+                "title" : "CSS Query",
+                "type": "string"
+              }
+            }
+          },
+          "category" : {
+            "title": "Category (Automatic mode or Manual with css query)",
+            "properties": {
+              "type" : {
+                "title" : "Mode",
+                "type": "string",
+                "enum": [
+                  "auto",
+                  "manual"
+                ]
+              },
+              "query": {
+                "title" : "CSS Query",
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
       "displayButton" : {
         "type": "object",
         "title": "Display Button",

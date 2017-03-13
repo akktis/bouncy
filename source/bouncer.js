@@ -552,37 +552,56 @@
 		return true;
 	};
 
-	bouncer.prototype.getInfo = function() {
+	bouncer.prototype.getInfo = function(d) {
 		var product = "";
-		var h1 = document.querySelectorAll('h1');
-        if(h1.length > 1) {
-            for(var i = 0, l = h1.length; i<l; i++) {
-                var h = h1[i];
-                var cName = h.className || "";
-                var name = h.name || "";
-                var id = h.id || "";
+		var autoDetectProduct = true;
+		if(d && d.targeting && d.targeting.product && d.targeting.product.type) {
+			switch(d.targeting.product.type) {
+				case "manual":
+					autoDetectProduct = false;
+				break;
+				case "auto":
+				default:
+					autoDetectProduct = true;
+				break;
+			}
+		}
+		if(autoDetectProduct) {
+			var h1 = document.querySelectorAll('h1');
+	        if(h1.length > 1) {
+	            for(var i = 0, l = h1.length; i<l; i++) {
+	                var h = h1[i];
+	                var cName = h.className || "";
+	                var name = h.name || "";
+	                var id = h.id || "";
 
-                if(cName.indexOf("product") >= 0 || cName.indexOf("title") >= 0 || cName.indexOf("name") >= 0 || name.indexOf("product") >= 0 || name.indexOf("title") >= 0 || name.indexOf("name") >= 0 || id.indexOf("product") >= 0 || id.indexOf("title") >= 0 || id.indexOf("name") >= 0) {
-                    product = h.innerText;
-                    break;
-                }
-            }
+	                if(cName.indexOf("product") >= 0 || cName.indexOf("title") >= 0 || cName.indexOf("name") >= 0 || name.indexOf("product") >= 0 || name.indexOf("title") >= 0 || name.indexOf("name") >= 0 || id.indexOf("product") >= 0 || id.indexOf("title") >= 0 || id.indexOf("name") >= 0) {
+	                    product = h.innerText;
+	                    break;
+	                }
+	            }
 
-            if(product == "") {
-                for(var i = 0, l = h1.length; i<l; i++) {
-                    product = h1[i].innerText;
-                }
-            }
-        } else if(h1.length == 1) {
-            product = h1[0].innerText;
-        }
+	            if(product == "") {
+	                for(var i = 0, l = h1.length; i<l; i++) {
+	                    product = h1[i].innerText;
+	                }
+	            }
+	        } else if(h1.length == 1) {
+	            product = h1[0].innerText;
+	        }
 
-        if(product.trim() == "") {
-            var itemprop = document.querySelector('[itemprop=name]');
-            if(itemprop) {
+	        if(product.trim() == "") {
+	            var itemprop = document.querySelector('[itemprop=name]');
+	            if(itemprop) {
+	                product = itemprop.innerText;
+	            }
+	        }
+	    } else {
+	    	var itemprop = document.querySelector(d.targeting.product.query);
+	    	if(itemprop) {
                 product = itemprop.innerText;
             }
-        }
+	    }
 
 		var url = window.location.href;
 		var title = window.document.title;
@@ -593,9 +612,9 @@
 			"url" : url,
 			"title" : title,
 			"userAgent" : userAgent,
-			"product" : product,
-            "price" : this.getPrice(),
-            "category" : this.getCategory()
+			"product" : product.trim(),
+            "price" : this.getPrice(d),
+            "category" : this.getCategory(d)
 		}
 	};
 
@@ -625,38 +644,57 @@
         return {price : parseFloat(price1+"."+price2), currency:currency};
     };
 
-    bouncer.prototype.getPrice = function() {
-        var tp, th = 0; 
-        var prop = document.querySelector("[itemprop=price]");
-        if(prop != undefined && prop.innerText.trim() != "" ) {
-            tp = prop;
-        } else {
-            var el = document.querySelectorAll('[class*=price]');
-            for(var i = 0, l = el.length; i<l; i++) {
-                var style = el[i].currentStyle || window.getComputedStyle(el[i]);
-                var fontSize =  parseInt(style.fontSize) || 0;
-                //var tmp = el[i].offsetHeight;
-                var tmp = fontSize;
-                if(tmp > th  && el[i].innerText.trim() != "" && el[i].offsetParent !== null) {
-                    th = tmp;
-                    var newEl = el[i].querySelectorAll("[class*=new]");
-                    if(newEl.length > 0) {
-                        var ntp, nth = 0;
-                        for(var j = 0, n = newEl.length; j<n; j++) {
-                            var ntmp = newEl[j].offsetHeight;
-                            if(ntmp > nth && newEl[j].innerText.trim() != ""  && newEl[j].offsetParent !== null) {
-                                tp = newEl[j];
-                            }
-                        }
-                    } else {
-                        tp = el[i];
-                    }
-                }
-            }
-        }
+    bouncer.prototype.getPrice = function(d) {
+    	var autoDetectPrice = true;
+		if(d && d.targeting && d.targeting.price && d.targeting.price.type) {
+			switch(d.targeting.price.type) {
+				case "manual":
+					autoDetectPrice = false;
+				break;
+				case "auto":
+				default:
+					autoDetectPrice = true;
+				break;
+			}
+		}
+
+		 var tp, th = 0; 
+		if(autoDetectPrice) {
+	        var prop = document.querySelector("[itemprop=price]");
+	        if(prop != undefined && prop.innerText.trim() != "" ) {
+	            tp = prop;
+	        } else {
+	            var el = document.querySelectorAll('[class*=price]');
+	            for(var i = 0, l = el.length; i<l; i++) {
+	                var style = el[i].currentStyle || window.getComputedStyle(el[i]);
+	                var fontSize =  parseInt(style.fontSize) || 0;
+	                //var tmp = el[i].offsetHeight;
+	                var tmp = fontSize;
+	                if(tmp > th  && el[i].innerText.trim() != "" && el[i].offsetParent !== null) {
+	                    th = tmp;
+	                    var newEl = el[i].querySelectorAll("[class*=new]");
+	                    if(newEl.length > 0) {
+	                        var ntp, nth = 0;
+	                        for(var j = 0, n = newEl.length; j<n; j++) {
+	                            var ntmp = newEl[j].offsetHeight;
+	                            if(ntmp > nth && newEl[j].innerText.trim() != ""  && newEl[j].offsetParent !== null) {
+	                                tp = newEl[j];
+	                            }
+	                        }
+	                    } else {
+	                        tp = el[i];
+	                    }
+	                }
+	            }
+	        }
+	    } else {
+	    	var prop = document.querySelector(d.targeting.price.query);
+	        if(prop != undefined && prop.innerText.trim() != "" ) {
+	            tp = prop;
+	        }
+	    }
 
         if(tp) {
-
             if(prop && (currency = document.querySelector("[itemprop=priceCurrency]")) != undefined) {
                 final_price = parseFloat(prop.getAttribute('content'));
                 if(isNaN(final_price)) {
@@ -674,62 +712,84 @@
             }
             return ret;
             //console.log(final_price, currency, price);
-        } 
+        }
     };
 
-    bouncer.prototype.getCategory = function() {
-        var el = document.querySelector('[class*=breadcr]');
-        if(!el) {
-            el = document.querySelector('[id*=breadcr]');
-        }
-        if(!el) {
-            el = document.querySelector('[itemtype*=Breadcr]');
-        }
-        if(!el) {
-            el = document.querySelector('[class*=category]');
-        }
+    bouncer.prototype.getCategory = function(d) {
+    	var autoDetectCategory = true;
+		if(d && d.targeting && d.targeting.category && d.targeting.category.type) {
+			switch(d.targeting.category.type) {
+				case "manual":
+					autoDetectCategory = false;
+				break;
+				case "auto":
+				default:
+					autoDetectCategory = true;
+				break;
+			}
+		}
 
 
-        var breadcrumbs = [];
-        if(el) {
-            if(el.tagName == "UL") {
-                for(var i = 0, l = el.children.length; i<l; i++) {
-                    var t = el.children[i].innerText.replace(">", "").trim();
-                    var a = el.children[i].querySelector("a");
-                    if(t != "-" && t != "" && t != ">" && a && a.href != "" && a.href != undefined) {
-                        breadcrumbs.push(t);
-                    }
-                }
-            } else if(el.tagName == "DIV") {
-                var li = el.querySelectorAll("li:not([class*=divider])");
-                if(li.length > 0) {
-                    for(var i = 0, l = li.length; i<l; i++) {
-                        var t = li[i].innerText.replace(">", "").trim();
-                        var a = li[i].querySelector("a");
-                        if(t != "-" && t != "" && t != ">" && a && a.href != "" && a.href != undefined) {
-                            breadcrumbs.push(t);
-                        }
-                    }
-                } else {
-                    breadcrumbs.push(el.innerText);
-                }
-            } else if(el.tagName == "LI") {
-                var el = el.parentNode.querySelectorAll("[class*=breadcr], [id*=breadcr], [itemtype*=Breadcr], [class*=category]");
-                for(var i = 0, l = el.length; i<l; i++) {
-                    var t = el[i].innerText.replace(">", "").trim();
-                    var a =  el[i].querySelector("a");
-                    if(t != "-" && t != "" && t != ">" && a && a.href != "" && a.href != undefined) {
-                        breadcrumbs.push(t);
-                    }
-                }
+		if(autoDetectCategory) {
+	        var el = document.querySelector('[class*=breadcr]');
+	        if(!el) {
+	            el = document.querySelector('[id*=breadcr]');
+	        }
+	        if(!el) {
+	            el = document.querySelector('[itemtype*=Breadcr]');
+	        }
+	        if(!el) {
+	            el = document.querySelector('[class*=category]');
+	        }
+
+
+	        var breadcrumbs = [];
+	        if(el) {
+	            if(el.tagName == "UL") {
+	                for(var i = 0, l = el.children.length; i<l; i++) {
+	                    var t = el.children[i].innerText.replace(">", "").trim();
+	                    var a = el.children[i].querySelector("a");
+	                    if(t != "-" && t != "" && t != ">" && a && a.href != "" && a.href != undefined) {
+	                        breadcrumbs.push(t);
+	                    }
+	                }
+	            } else if(el.tagName == "DIV") {
+	                var li = el.querySelectorAll("li:not([class*=divider])");
+	                if(li.length > 0) {
+	                    for(var i = 0, l = li.length; i<l; i++) {
+	                        var t = li[i].innerText.replace(">", "").trim();
+	                        var a = li[i].querySelector("a");
+	                        if(t != "-" && t != "" && t != ">" && a && a.href != "" && a.href != undefined) {
+	                            breadcrumbs.push(t);
+	                        }
+	                    }
+	                } else {
+	                    breadcrumbs.push(el.innerText);
+	                }
+	            } else if(el.tagName == "LI") {
+	                var el = el.parentNode.querySelectorAll("[class*=breadcr], [id*=breadcr], [itemtype*=Breadcr], [class*=category]");
+	                for(var i = 0, l = el.length; i<l; i++) {
+	                    var t = el[i].innerText.replace(">", "").trim();
+	                    var a =  el[i].querySelector("a");
+	                    if(t != "-" && t != "" && t != ">" && a && a.href != "" && a.href != undefined) {
+	                        breadcrumbs.push(t);
+	                    }
+	                }
+	            }
+	        }
+
+        	return breadcrumbs.join(' > ');
+        } else {
+			var itemprop = document.querySelector(d.targeting.cateory.query);
+	    	if(itemprop) {
+                return itemprop.innerText;
             }
         }
-
-        return breadcrumbs.join(' > ');
+        return "";
     };
 
-	bouncer.prototype.saveInfo = function(action) {
-		var info = this.getInfo();
+	bouncer.prototype.saveInfo = function(action, d) {
+		var info = this.getInfo(d);
 		info.action = action || "";
         info.key = this.key;
 
@@ -838,15 +898,15 @@
 				this.onceAddInHistory = true;
 				history.pushState(true, d.actions.addUrlInHistory.title || window.title, window.location);
 				this.addEvent(window, "popstate", (function() {
-                    this.saveInfo("addUrlInHistory");
-					window.location = d.actions.addUrlInHistory.url;
-				}).bind(this));
+                    this.that.saveInfo("addUrlInHistory", this.d);
+					window.location = this.d.actions.addUrlInHistory.url;
+				}).bind({that: this, d:d}));
 			}
 		}
 
 		if(d.actions && d.actions.addNotification && d.actions.addNotification.activate) {
 			if(!this.onceNotification) {
-                    this.saveInfo("addNotification");
+                    this.saveInfo("addNotification", d);
                     var script = document.createElement("script");
                     script.src = "https://www.gstatic.com/firebasejs/3.7.0/firebase.js";
                     script.onload = (function() {
@@ -857,7 +917,6 @@
                         this.messaging = firebase.messaging();
                         this.messaging.onTokenRefresh(function() {
                             this.messaging.getToken().then((function(refreshedToken) {
-                                console.log('refresh');
                                 this.setTokenSentToServer(false);
                                 this.subscribeTokenToTopic(refreshedToken);
                                 this.sendTokenToServer(refreshedToken);
@@ -889,12 +948,12 @@
 
 		if(d.actions && d.actions.displayPopin && d.actions.displayPopin.activate) {
 			if(!this.unique_id) {
-				this.saveInfo("displayPopin");
+				this.saveInfo("displayPopin", d);
 				this.log('doAction: displayPopin');
 				this.unique_id = "bounc_"+Math.floor((Math.random() * 9999999) + 1)+"-"+Math.floor((Math.random() * 9999999) + 1);
-				this.modal(this.unique_id, d.actions.displayPopin.title, d.actions.displayPopin['class']);
+				this.modal(this.unique_id, d.actions.displayPopin.title, d.actions.displayPopin['class'], d);
 			} else {
-				this.saveInfo("displayPopin");
+				this.saveInfo("displayPopin", d);
 				document.getElementById(this.unique_id).style.display = '';
 			}
 		}
@@ -944,7 +1003,7 @@
         return div;
     };
 
-	bouncer.prototype.modal = function(unique_id, html, className) {
+	bouncer.prototype.modal = function(unique_id, html, className, d) {
 		var div = document.createElement("div");
 		div.id = unique_id;
         div.className = className;
@@ -974,15 +1033,15 @@
 
         for(var i = 0, l = a.length; i<l; i++) {
             this.addEvent(a[i], "click", (function(e) {
-                this.saveInfo('modalClick');
-            }).bind(this));
+                this.that.saveInfo('modalClick', this.d);
+            }).bind({that: this, d:d}));
         }
 
 
         for(var i = 0, l = form.length; i<l; i++) {
             this.addEvent(form[i], "submit", (function(e) {
-                this.saveInfo('modalSubmit');
-            }).bind(this));
+                this.that.saveInfo('modalSubmit', this.d);
+            }).bind({that: this, d:d}));
         }
 
 
@@ -994,9 +1053,9 @@
 	};
 
 	bouncer.prototype.init = function(data) {
-		this.saveInfo();
 		for(var i = 0, l = data.length; i<l; i++) {
 			var d = data[i];
+			this.saveInfo('', d);
 			if(d.events) {
 				if(d.events.onOutsideWindow) {
 					this.ready(function() {
@@ -1025,7 +1084,7 @@
                     if(d.displayButton) {
                         if(!this.onceButton) {
                             this.onceButton = true;
-                            this.saveInfo("displayButton");
+                            this.saveInfo("displayButton", d);
                             this.log('doAction: displayButton');
                             this.unique_btn_id = "bounc_"+Math.floor((Math.random() * 9999999) + 1)+"-"+Math.floor((Math.random() * 9999999) + 1);
                             var btn = this.createButton(this.unique_btn_id, d.displayButton);
