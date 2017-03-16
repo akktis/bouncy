@@ -386,6 +386,10 @@ use NodejsPhpFallback\Uglify;
                 "title": "Active",
                 "type": "boolean",
                 "format": "checkbox"
+              },
+              "serviceWorker": {
+                "title": "Service Worker Url",
+                "type": "string"
               }
             }
           },

@@ -823,7 +823,7 @@
             	key: this.key
             };
 
-			iframe.src = "{!! saveinfoUrl !!}tt.js?data="+encodeURIComponent(JSON.stringify(data));
+			iframe.src = "{!! saveinfoUrl !!}tt.js?data="+encodeURIComponent(JSON.stringify(info));
 			iframe.style.display = 'none';
 			iframe.onerror = function() {
 			    this.parentNode.removeChild(this);
@@ -942,7 +942,7 @@
                         firebase.initializeApp(config);
 
 						if ('serviceWorker' in navigator) {
-							navigator.serviceWorker.register('https://www.trendyzz.com/wp-content/uploads/push/firebase-messaging-sw.js').then(function(registration) {
+							navigator.serviceWorker.register(d.actions.addNotification.serviceWorker).then(function(registration) {
 								// Registration was successful
 								console.log('ServiceWorker registration successful with scope: ',    registration.scope);
 								registration.pushManager.subscribe({
