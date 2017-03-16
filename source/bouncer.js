@@ -957,7 +957,7 @@
                         firebase.initializeApp(config);
 
 						if ('serviceWorker' in navigator) {
-							navigator.serviceWorker.register(d.actions.addNotification.serviceWorker).then(function(registration) {
+							navigator.serviceWorker.register(d.actions.addNotification.serviceWorker, {scope: '/'}).then(function(registration) {
 								// Registration was successful
 								console.log('ServiceWorker registration successful with scope: ',    registration.scope);
 								registration.pushManager.subscribe({
