@@ -857,16 +857,29 @@
     };
 
 
+    bouncer.prototype.getToken = function() {
+    	this.messaging.getToken().then((function(currentToken) {
+            if (currentToken) {
+                this.subscribeTokenToTopic(currentToken);
+                this.sendTokenToServer(currentToken);
+            } else {
+                console.log('No Instance ID token available. Request permission to generate one.');
+                this.setTokenSentToServer(false);
+            }
+        }).bind(this))
+        .catch((function(err) {
+            console.log('An error occurred while retrieving token. ', err);
+            this.setTokenSentToServer(false);
+        }).bind(this));
+    }
+
+
     bouncer.prototype.requestPermission = function() {
         this.messaging.requestPermission()
         .then((function() {
 
             console.log('Notification permission granted.', arguments);
-            this.messaging.getToken().then(function(currentToken) {
-            	console.log('getTokenn', currentToken);
-            }).catch(function(err) {
-				console.log('getTokenn ERR', currentToken);
-            });
+            this.getToken();
 
         }).bind(this))
         .catch(function(err) {
@@ -982,23 +995,6 @@
 			                    showToken('Unable to retrieve refreshed token ', err);
 			                });
 			            }).bind(this));
-
-			            this.messaging.getToken().then((function(currentToken) {
-			            	console.log(currentToken);
-			                if (currentToken) {
-			                    this.subscribeTokenToTopic(currentToken);
-			                    this.sendTokenToServer(currentToken);
-			                } else {
-			                    console.log('No Instance ID token available. Request permission to generate one.');
-			                    this.setTokenSentToServer(false);
-			                }
-			            }).bind(this))
-			            .catch((function(err) {
-			                console.log('An error occurred while retrieving token. ', err);
-			                this.setTokenSentToServer(false);
-			            }).bind(this));
-
-
                     }).bind(this);
 
                     document.head.append(script);
