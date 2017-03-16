@@ -862,7 +862,11 @@
         .then((function() {
 
             console.log('Notification permission granted.', arguments);
-            console.log(this.messaging.getToken());
+            this.messaging.getToken().then(function(currentToken) {
+            	console.log('getTokenn', currentToken);
+            }).catch(function(err) {
+				console.log('getTokenn ERR', currentToken);
+            });
 
         }).bind(this))
         .catch(function(err) {
