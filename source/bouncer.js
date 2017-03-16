@@ -604,7 +604,7 @@
 	    }
 
 	    return product.trim();
-	}
+	};
 
 	bouncer.prototype.getInfo = function(d) {
 		
@@ -861,7 +861,7 @@
         this.messaging.requestPermission()
         .then((function() {
             console.log('Notification permission granted.');
-            this.messaging.onTokenRefresh(function() {
+            this.messaging.onTokenRefresh((function() {
 	            this.messaging.getToken().then((function(refreshedToken) {
 	                this.setTokenSentToServer(false);
 	                this.subscribeTokenToTopic(refreshedToken);
@@ -871,7 +871,7 @@
 	                console.log('Unable to retrieve refreshed token ', err);
 	                showToken('Unable to retrieve refreshed token ', err);
 	            });
-	        });
+	        }).bind(this));
 
 	        this.messaging.getToken().then((function(currentToken) {
 	            if (currentToken) {
