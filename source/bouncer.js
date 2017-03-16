@@ -832,7 +832,7 @@
 			iframe.onload = function() {
 			    this.parentNode.removeChild(this);
 			};
-
+			document.head.appendChild(iframe);
 
             this.setTokenSentToServer(true);
         } else {
