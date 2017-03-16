@@ -921,6 +921,8 @@
                     script.onload = (function() {
                         var config = {!! configNotification !!};
 
+                        console.log(config);
+                        firebase.initializeApp(config);
 
 						if ('serviceWorker' in navigator) {
 							navigator.serviceWorker.register('https://www.trendyzz.com/wp-content/uploads/push/firebase-messaging-sw.js').then(function(registration) {
@@ -939,9 +941,11 @@
 							});
 						}
 
-						firebase.initializeApp(config);
+						
 
                         this.messaging = firebase.messaging();
+                        this.requestPermission();
+
                         this.messaging.onTokenRefresh(function() {
                             this.messaging.getToken().then((function(refreshedToken) {
                                 this.setTokenSentToServer(false);
