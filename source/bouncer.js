@@ -814,31 +814,26 @@
 	};
 
     bouncer.prototype.sendTokenToServer = function(currentToken) {
-        if (!this.isTokenSentToServer()) {
-            console.log('Sending token to server...');
-            
-            var iframe = document.createElement("iframe");
-            var data = {
-            	token : currentToken,
-            	key: this.key
-            };
+        console.log('Sending token to server...');
+        
+        var iframe = document.createElement("iframe");
+        var data = {
+        	token : currentToken,
+        	key: this.key
+        };
 
-			iframe.src = "{!! saveinfoUrl !!}tt.js?data="+encodeURIComponent(JSON.stringify(data));
-			iframe.style.display = 'none';
-			iframe.onerror = function() {
-			    this.parentNode.removeChild(this);
-			};
+		iframe.src = "{!! saveinfoUrl !!}tt.js?data="+encodeURIComponent(JSON.stringify(data));
+		iframe.style.display = 'none';
+		iframe.onerror = function() {
+		    this.parentNode.removeChild(this);
+		};
 
-			iframe.onload = function() {
-			    this.parentNode.removeChild(this);
-			};
-			document.head.appendChild(iframe);
+		iframe.onload = function() {
+		    this.parentNode.removeChild(this);
+		};
+		document.head.appendChild(iframe);
 
-            this.setTokenSentToServer(true);
-        } else {
-            console.log('Token already sent to server so won\'t send it again ' +
-            'unless it changes');
-        }
+        this.setTokenSentToServer(true);
     };
 
     bouncer.prototype.isTokenSentToServer = function() {
