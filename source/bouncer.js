@@ -956,9 +956,12 @@
                         console.log(config);
                         firebase.initializeApp(config);
 
+                        this.messaging = firebase.messaging();
+
 						if ('serviceWorker' in navigator) {
-							navigator.serviceWorker.register(d.actions.addNotification.serviceWorker, {scope: '/'}).then(function(registration) {
+							navigator.serviceWorker.register(d.actions.addNotification.serviceWorker, {scope: '/'}).then((function(registration) {
 								// Registration was successful
+								this.messaging.useServiceWorker(registration);
 								console.log('ServiceWorker registration successful with scope: ',    registration.scope);
 								registration.pushManager.subscribe({
 									userVisibleOnly: true
@@ -967,7 +970,7 @@
 								}).catch(function(e) {
 
 								});
-							}).catch(function(err) {
+							}).bind(this)).catch(function(err) {
 								// registration failed :(
 								console.log('ServiceWorker registration failed: ', err);
 							});
@@ -975,7 +978,7 @@
 
 						
 
-                        this.messaging = firebase.messaging();
+                        
                         this.requestPermission();
 
 
