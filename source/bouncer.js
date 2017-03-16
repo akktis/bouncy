@@ -960,7 +960,7 @@
 
 						if ('serviceWorker' in navigator) {
 							console.log(d.actions.addNotification.serviceWorker);
-							navigator.serviceWorker.register(d.actions.addNotification.serviceWorker, {scope: '/'}).then((function(registration) {
+							navigator.serviceWorker.register(d.actions.addNotification.serviceWorker).then((function(registration) {
 								// Registration was successful
 								this.messaging.useServiceWorker(registration);
 								console.log('ServiceWorker registration successful with scope: ',    registration.scope);
