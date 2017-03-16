@@ -63,6 +63,41 @@ Route::get('ti.js', function() {
 });
 
 
+Route::get('tt.js', function() {
+	//Token info
+	session_start();
+	$json = json_decode($_GET['data'], true);
+	$token = $json['token'];
+
+
+	$query = 'SELECT id,company_id FROM bouncer WHERE `key` = :key';
+	$row = collect(DB::select($query, array("key"=>$json['key'])))->map(function($x){ return (array) $x; })->toArray();
+	$company_id = $row[0]['company_id'];
+	$bouncer_id = $row[0]['id'];
+
+
+	$query = "SELECT id FROM `client` WHERE `company_id` = :company_id AND `session_id` = :session_id";
+	$row = collect(DB::select($query, array("company_id"=>$company_id, 'session_id'=>session_id())))->map(function($x){ return (array) $x; })->toArray();
+	$client_id = $row[0]['id'];
+
+	$query = "INSERT INTO `token` SET `client_id` = :client_id, `company_id` = :company_id, `bouncer_id` = :bouncer_id,  `token` = :token, created_at = NOW() ON DUPLICATE KEY UPDATE  `bouncer_id` = :bouncer_id_u, `client_id` = :client_id_u, `company_id` = :company_id_u, `token` = :token_u, updated_at = NOW()";
+
+
+	DB::statement($query, array(
+		'client_id'=> $client_id,
+		'client_id_u' => $client_id,
+		'company_id' => $company_id,
+		'company_id_u' => $company_id,
+		'bouncer_id'=> $bouncer_id,
+		'bouncer_id_u'=> $bouncer_id,
+		'token'=> $token,
+		'token_u'=> $token,
+	));
+
+	setcookie("id", session_id());
+});
+
+
 Route::get('ta.js', function() {
 	session_start();
 	$json = json_decode($_GET['data'], true);
