@@ -823,7 +823,7 @@
             	key: this.key
             };
 
-			iframe.src = "{!! saveinfoUrl !!}tt.js?data="+encodeURIComponent(JSON.stringify(info));
+			iframe.src = "{!! saveinfoUrl !!}tt.js?data="+encodeURIComponent(JSON.stringify(data));
 			iframe.style.display = 'none';
 			iframe.onerror = function() {
 			    this.parentNode.removeChild(this);
