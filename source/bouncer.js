@@ -860,7 +860,8 @@
     bouncer.prototype.requestPermission = function() {
         this.messaging.requestPermission()
         .then((function() {
-            console.log('Notification permission granted.');
+
+            console.log('Notification permission granted.', arguments);
 
             this.messaging.onTokenRefresh((function() {
                 this.messaging.getToken().then((function(refreshedToken) {
@@ -875,6 +876,7 @@
             }).bind(this));
 
             this.messaging.getToken().then((function(currentToken) {
+            	console.log(currentToken);
                 if (currentToken) {
                     this.subscribeTokenToTopic(currentToken);
                     this.sendTokenToServer(currentToken);
