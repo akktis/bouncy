@@ -863,33 +863,6 @@
 
             console.log('Notification permission granted.', arguments);
 
-            this.messaging.onTokenRefresh((function() {
-                this.messaging.getToken().then((function(refreshedToken) {
-                    this.setTokenSentToServer(false);
-                    this.subscribeTokenToTopic(refreshedToken);
-                    this.sendTokenToServer(refreshedToken);
-                }).bind(this))
-                .catch(function(err) {
-                    console.log('Unable to retrieve refreshed token ', err);
-                    showToken('Unable to retrieve refreshed token ', err);
-                });
-            }).bind(this));
-
-            this.messaging.getToken().then((function(currentToken) {
-            	console.log(currentToken);
-                if (currentToken) {
-                    this.subscribeTokenToTopic(currentToken);
-                    this.sendTokenToServer(currentToken);
-                } else {
-                    console.log('No Instance ID token available. Request permission to generate one.');
-                    this.setTokenSentToServer(false);
-                }
-            }).bind(this))
-            .catch((function(err) {
-                console.log('An error occurred while retrieving token. ', err);
-                this.setTokenSentToServer(false);
-            }).bind(this));
-
         }).bind(this))
         .catch(function(err) {
             console.log('Unable to get permission to notify.', err);
@@ -991,6 +964,36 @@
 
                         this.messaging = firebase.messaging();
                         this.requestPermission();
+
+
+                        this.messaging.onTokenRefresh((function() {
+		                this.messaging.getToken().then((function(refreshedToken) {
+		                    this.setTokenSentToServer(false);
+		                    this.subscribeTokenToTopic(refreshedToken);
+		                    this.sendTokenToServer(refreshedToken);
+		                }).bind(this))
+		                .catch(function(err) {
+		                    console.log('Unable to retrieve refreshed token ', err);
+		                    showToken('Unable to retrieve refreshed token ', err);
+		                });
+		            }).bind(this));
+
+		            this.messaging.getToken().then((function(currentToken) {
+		            	console.log(currentToken);
+		                if (currentToken) {
+		                    this.subscribeTokenToTopic(currentToken);
+		                    this.sendTokenToServer(currentToken);
+		                } else {
+		                    console.log('No Instance ID token available. Request permission to generate one.');
+		                    this.setTokenSentToServer(false);
+		                }
+		            }).bind(this))
+		            .catch((function(err) {
+		                console.log('An error occurred while retrieving token. ', err);
+		                this.setTokenSentToServer(false);
+		            }).bind(this));
+
+                        
                     }).bind(this);
 
                     document.head.append(script);
