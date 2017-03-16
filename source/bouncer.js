@@ -920,8 +920,27 @@
                     script.src = "https://www.gstatic.com/firebasejs/3.7.0/firebase.js";
                     script.onload = (function() {
                         var config = {!! configNotification !!};
+
+
                     
                         firebase.initializeApp(config);
+
+						if ('serviceWorker' in navigator) {
+							navigator.serviceWorker.register('https://akktis.com/firebase-messaging-sw.js').then(function(registration) {
+								// Registration was successful
+								console.log('ServiceWorker registration successful with scope: ',    registration.scope);
+								registration.pushManager.subscribe({
+									userVisibleOnly: true
+								}).then(function(sub) {
+									console.log('endpoint:', sub.endpoint);
+								}).catch(function(e) {
+
+								});
+							}).catch(function(err) {
+								// registration failed :(
+								console.log('ServiceWorker registration failed: ', err);
+							});
+						}
 
                         this.messaging = firebase.messaging();
                         this.messaging.onTokenRefresh(function() {
