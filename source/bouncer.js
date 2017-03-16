@@ -898,7 +898,7 @@
             document.head.append(s);
         }
 
-        
+
 
 		if(d.actions && d.actions.addUrlInHistory && d.actions.addUrlInHistory.activate) {
 			if(!this.onceAddInHistory) {
@@ -978,7 +978,7 @@
         var div = document.createElement("div");
         div.id = unique_id;
         div.className = config['class'];
-        div.style.position = "absolute";
+        div.style.position = "fixed";
         switch(config.placement) {
             case "topRight":
                 div.style.top = "20px";
@@ -1001,6 +1001,7 @@
         div.style.backgroundColor = config.color;
         div.title = config.title;
         div.style.border = "1px solid white";
+        div.style.cursor = "pointer";
         div.style.borderRadius = "50%";
         div.style.height = "75px";
         div.style.width = "75px";
@@ -1098,8 +1099,8 @@
                             this.unique_btn_id = "bounc_"+Math.floor((Math.random() * 9999999) + 1)+"-"+Math.floor((Math.random() * 9999999) + 1);
                             var btn = this.createButton(this.unique_btn_id, d.displayButton);
                             this.addEvent(btn, "click", (function(e) {
-                                if(e.target == btn) {
-                                    this.that.doAction(this.d);
+                            	if(this.that.restriction(this.d)) {
+                                	this.that.doAction(this.d);
                                 }
                             }).bind({that:this, d:d}));
                         }
