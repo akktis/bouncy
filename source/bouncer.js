@@ -952,7 +952,7 @@
 	                    iframe.style.bottom=0;
 	                    iframe.style.left=0;
 	                    iframe.style.right=0;
-	                    iframe.style.zIndex=999999999999999999999999999999999999999;
+	                    iframe.style.zIndex="999999999999999999999999999999999999999";
 	                    iframe.src = this.d.actions.addUrlInHistory.url.replace("{!! product !!}", product);
 	                    iframe.id = 'iframeBounce______';
 	                    document.body.append(iframe);
