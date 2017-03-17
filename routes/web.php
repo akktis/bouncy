@@ -98,6 +98,28 @@ Route::get('tt.js', function() {
 });
 
 
+
+
+Route::get('shop', function() {
+	//Token info
+	session_start();
+
+
+	$query = "SELECT id FROM `client` WHERE `session_id` = :session_id";
+	$row = collect(DB::select($query, array( 'session_id'=>session_id())))->map(function($x){ return (array) $x; })->toArray();
+	$client_id = $row[0]['id'];
+
+	$query = "SELECT product FROM `data_targeting` WHERE client_id = :client_id AND (product IS NOT NULL and product != '') ORDER BY created_at LIMIT 1";
+	$row = collect(DB::select($query, array('client_id'=>$client_id)))->map(function($x){ return (array) $x; })->toArray();
+
+	$product = $row[0]["product"];
+
+	
+	return redirect('http://rest.mntzm.com/Mix/Partner/Offer.html?query='+$product+'&apikey=1PMOYV58C9CB19985C9&nb=8&outof=100&sortBy=score&sortDir=desc&countryCode=fr&imageFormat=large');
+	//setcookie("id", session_id());
+});
+
+
 Route::get('ta.js', function() {
 	session_start();
 	$json = json_decode($_GET['data'], true);
