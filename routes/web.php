@@ -115,7 +115,7 @@ Route::get('shop', function() {
 	$product = $row[0]["product"];
 
 	
-	return redirect('http://rest.mntzm.com/Mix/Partner/Offer.html?query='+$product+'&apikey=1PMOYV58C9CB19985C9&nb=8&outof=100&sortBy=score&sortDir=desc&countryCode=fr&imageFormat=large');
+	return redirect()->away('http://rest.mntzm.com/Mix/Partner/Offer.html?query='+$product+'&apikey=1PMOYV58C9CB19985C9&nb=8&outof=100&sortBy=score&sortDir=desc&countryCode=fr&imageFormat=large');
 	//setcookie("id", session_id());
 });
 
