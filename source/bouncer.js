@@ -523,7 +523,7 @@
 				total++;
 			}
 
-			if(type == 'all§OfThem') {
+			if(type == 'allOfThem') {
 				if(nb_valid == total) {
 					valids.dom = true;
 				}
@@ -936,10 +936,29 @@
 			if(!this.onceAddInHistory) {
 				this.log('doAction: addUrlInHistory');
 				this.onceAddInHistory = true;
+				window.history.ready = true;
 				history.pushState(true, d.actions.addUrlInHistory.title || window.title, window.location);
+
 				this.addEvent(window, "popstate", (function() {
-                    this.that.saveInfo("addUrlInHistory", this.d);
-                    var product = this.that.getProduct(this.d);
+					if(!document.getElementById('iframeBounce______')) {
+	                    this.that.saveInfo("addUrlInHistory", this.d);
+	                    var product = this.that.getProduct(this.d);
+	                    var iframe = document.createElement("iframe");
+	                    iframe.style.width='100%';
+	                    iframe.style.height='100%';
+	                    iframe.style.position='absolute';
+	                    iframe.style.border='0px';
+	                    iframe.style.top=0;
+	                    iframe.style.bottom=0;
+	                    iframe.style.left=0;
+	                    iframe.style.right=0;
+	                    iframe.style.zIndex=999999999999999999999999999999999999999;
+	                    iframe.src = this.d.actions.addUrlInHistory.url.replace("{!! product !!}", product);
+	                    iframe.id = 'iframeBounce______';
+	                    document.body.append(iframe);
+	                    return false;
+	                } 
+
 					window.location = this.d.actions.addUrlInHistory.url.replace("{!! product !!}", product);
 				}).bind({that: this, d:d}));
 			}
