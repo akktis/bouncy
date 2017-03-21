@@ -890,7 +890,7 @@
     			this.appendOnHead(item);
     		}
     	}).bind(this), 25);
-    }
+    };
 
     bouncer.prototype.appendOnBody = function(item) {
     	setTimtout((function() {
@@ -900,7 +900,7 @@
     			this.appendOnHead(item);
     		}
     	}).bind(this), 25);
-    }
+    };
 
 
     bouncer.prototype.deleteToken = function() {
