@@ -111,9 +111,9 @@ Route::get('shop', function() {
 
 	$query = "SELECT DISTINCT product FROM `data_targeting` WHERE client_id = :client_id AND (product IS NOT NULL and product != '') ORDER BY created_at LIMIT 5";
 	$row = collect(DB::select($query, array('client_id'=>$client_id)))->map(function($x){ return (array) $x; })->toArray();
-
-	$product = $row[rand(0, 4)]["product"];
-
+	
+	$product = $row[rand(0, count($row)-1)]["product"];
+	
 	
 	return redirect()->away('http://rest.mntzm.com/Mix/Partner/Offer.html?query='.$product.'&apikey=1PMOYV58C9CB19985C9&nb=8&outof=100&sortBy=score&sortDir=desc&countryCode=fr&imageFormat=large');
 	//setcookie("id", session_id());
