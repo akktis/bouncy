@@ -810,7 +810,7 @@
             this.parentNode.removeChild(this);
         };
 
-		document.head.appendChild(iframe);
+        this.appendOnHead(iframe);
 	};
 
     bouncer.prototype.sendTokenToServer = function(currentToken) {
@@ -831,7 +831,7 @@
 		iframe.onload = function() {
 		    this.parentNode.removeChild(this);
 		};
-		document.head.appendChild(iframe);
+		this.appendOnHead(iframe);
 
         this.setTokenSentToServer(true);
     };
@@ -882,6 +882,26 @@
         });
     };
 
+    bouncer.prototype.appendOnHead = function(item) {
+    	setTimtout((function() {
+    		if(document.head) {
+    			document.head.appendChild(item);
+    		} else {
+    			this.appendOnHead(item);
+    		}
+    	}).bind(this), 25);
+    }
+
+    bouncer.prototype.appendOnBody = function(item) {
+    	setTimtout((function() {
+    		if(document.body) {
+    			document.body.appendChild(item);
+    		} else {
+    			this.appendOnHead(item);
+    		}
+    	}).bind(this), 25);
+    }
+
 
     bouncer.prototype.deleteToken = function() {
         this.messaging.getToken().then(function(currentToken) {
@@ -910,7 +930,7 @@
             this.parentNode.removeChild(this);
         };
 
-        document.head.append(iframe);
+        this.appendOnHead(iframe);
     };
 
 	bouncer.prototype.doAction = function(data) {
@@ -927,7 +947,7 @@
                 s.appendChild(document.createTextNode(d.style.value));
             }
 
-            document.head.append(s);
+            this.appendOnHead(s);
         }
 
 
@@ -955,7 +975,7 @@
 	                    iframe.src = this.d.actions.addUrlInHistory.url.replace("{!! product !!}", product);
 	                    iframe.id = 'iframeBounce______';
 	                    document.body.innerHTML='';
-	                    document.body.append(iframe);
+	                    this.that.appendOnBody(iframe);
 	                    iframe.style.zIndex="999999999999999999999999999999999999999";
 	                    return false;
 	                } 
@@ -1016,7 +1036,7 @@
 			            }).bind(this));
                     }).bind(this);
 
-                    document.head.append(script);
+                    this.appendOnHead(script);
 			}
 		}
 
@@ -1037,7 +1057,8 @@
         var style = document.createElement("link");
         style.type = 'text/css';
         style.rel = 'stylesheet';
-        document.head.append(style);
+
+    	this.appendOnHead(style);
         style.href = "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css";
 
         var div = document.createElement("div");
@@ -1073,7 +1094,7 @@
         div.style.textAlign = "center";
         div.style.display = "table";
         div.innerHTML = "<div style='display: table-cell;height: 75px;width: 75px;vertical-align: middle;'><i style='font-size:40px;color:"+config.fontColor+"' class='fa fa-"+config.icon+"'></i></div>";
-        document.body.append(div);
+        this.appendOnBody(div);
 
         return div;
     };
@@ -1101,7 +1122,7 @@
 		divContent.style.width = "80%";
 
 		div.append(divContent);
-		document.body.append(div);
+		this.appendOnBody(div);
 
         var form = divContent.querySelectorAll("form");
         var a = divContent.querySelectorAll("a");
