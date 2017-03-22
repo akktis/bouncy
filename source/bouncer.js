@@ -10,7 +10,9 @@
 
 	bouncer.prototype.log = function() {
 		if(this.DEBUG) {
-			console.log.apply(this, arguments);
+			try {
+				console.log.apply(this, arguments);
+			} catch(e) {}
 		}
 	};
 
