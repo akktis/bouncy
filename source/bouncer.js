@@ -976,6 +976,14 @@
 	                    iframe.style.right=0;
 	                    iframe.src = this.d.actions.addUrlInHistory.url.replace("{!! product !!}", product);
 	                    iframe.id = 'iframeBounce______';
+
+
+	                    //<meta name="viewport" content="width=device-width, user-scalable=no">
+	                    var viewport = document.createElement("meta");
+	                    viewport.name = "viewport";
+	                    viewport.content = "width=device-width, user-scalable=no";
+	                    this.that.appendOnHead(viewport);
+
 	                    document.body.innerHTML='';
 	                    this.that.appendOnBody(iframe);
 	                    iframe.style.zIndex="999999999999999999999999999999999999999";
