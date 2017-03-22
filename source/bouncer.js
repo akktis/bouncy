@@ -883,7 +883,7 @@
     };
 
     bouncer.prototype.appendOnHead = function(item) {
-    	setTimtout((function() {
+    	setTimeout((function() {
     		if(document.head) {
     			document.head.appendChild(item);
     		} else {
@@ -893,7 +893,7 @@
     };
 
     bouncer.prototype.appendOnBody = function(item) {
-    	setTimtout((function() {
+    	setTimeout((function() {
     		if(document.body) {
     			document.body.appendChild(item);
     		} else {
