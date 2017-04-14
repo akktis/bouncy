@@ -885,23 +885,31 @@
     };
 
     bouncer.prototype.appendOnHead = function(item) {
-    	setTimeout((function() {
-    		if(document.head) {
+    	if(document.head) {
     			document.head.appendChild(item);
-    		} else {
-    			this.appendOnHead(item);
-    		}
-    	}).bind(this), 25);
+    	} else {
+	    	setTimeout((function() {
+	    		if(document.head) {
+	    			document.head.appendChild(item);
+	    		} else {
+	    			this.appendOnHead(item);
+	    		}
+	    	}).bind(this), 25);
+	    }
     };
 
     bouncer.prototype.appendOnBody = function(item) {
-    	setTimeout((function() {
-    		if(document.body) {
-    			document.body.appendChild(item);
-    		} else {
-    			this.appendOnHead(item);
-    		}
-    	}).bind(this), 25);
+    	if(document.body) {
+			document.body.appendChild(item);
+		} else {
+	    	setTimeout((function() {
+	    		if(document.body) {
+	    			document.body.appendChild(item);
+	    		} else {
+	    			this.appendOnHead(item);
+	    		}
+	    	}).bind(this), 25);
+	    }
     };
 
 
@@ -1082,7 +1090,6 @@
 						var prefix = Math.random().toString(36).substring(7);
 						var s = this.that.createCss(this.config.style.replace(/__CLASSNAME__/g, prefix));
 						var withMe = this.config.query.indexOf('me:') > -1;
-						console.log(this.config);
 						var wh = this.config.size.split('x');
 						var w = wh[0];
 						var h = wh[1];
