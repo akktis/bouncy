@@ -943,9 +943,10 @@
         this.appendOnHead(iframe);
     };
 
-    bouncer.prototype.createCss = function(value) {
+    bouncer.prototype.createCss = function(value, id) {
         var s = document.createElement("style");
         s.type = 'text/css';
+        if(id != undefined) s.id = id;
         
         if (s.styleSheet){
             s.styleSheet.cssText = value;
@@ -1088,7 +1089,7 @@
 					var data = JSON.parse(data);
 					if(data && data.result && data.result.length > 0) {
 						var prefix = Math.random().toString(36).substring(7);
-						var s = this.that.createCss(this.config.style.replace(/__CLASSNAME__/g, prefix));
+						var s = this.that.createCss(this.config.style.replace(/__CLASSNAME__/g, prefix), prefix);
 						var withMe = this.config.query.indexOf('me:') > -1;
 						var wh = this.config.size.split('x');
 						var w = wh[0];
