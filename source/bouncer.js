@@ -943,10 +943,9 @@
         this.appendOnHead(iframe);
     };
 
-    bouncer.prototype.createCss = function(value, id) {
+    bouncer.prototype.createCss = function(value) {
         var s = document.createElement("style");
         s.type = 'text/css';
-        if(id != undefined) s.id = id;
         
         if (s.styleSheet){
             s.styleSheet.cssText = value;
@@ -1088,8 +1087,9 @@
 				this.xdr('http://rest.mntzm.com/Mix/Partner/Offer?query='+(d.actions.widget.configs[i].query)+'&apikey='+(d.actions.widget.configs[i].apikey)+'&nb='+(d.actions.widget.configs[i].number)+'&outof='+(d.actions.widget.configs[i].outof)+'&sortBy='+(d.actions.widget.configs[i].sortBy)+'&sortDir='+(d.actions.widget.configs[i].sortDir)+'&countryCode='+(d.actions.widget.configs[i].countryCode)+(d.actions.widget.configs[i].customArgs), 'GET', null, (function(data) {
 					var data = JSON.parse(data);
 					if(data && data.result && data.result.length > 0) {
-						var prefix = Math.random().toString(36).substring(7);
-						var s = this.that.createCss(this.config.style.replace(/__CLASSNAME__/g, prefix), prefix);
+						var prefix = Math.random().toString(36).substring(7).replace(/[0-9]+/g, '');
+
+						var s = this.that.createCss(this.config.style.replace(/__CLASSNAME__/g, prefix));
 						var withMe = this.config.query.indexOf('me:') > -1;
 						var wh = this.config.size.split('x');
 						var w = wh[0];
