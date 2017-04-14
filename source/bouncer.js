@@ -953,7 +953,7 @@
             s.appendChild(document.createTextNode(value));
         }
 
-        this.appendOnHead(s);
+        this.appendOnBody(s);
         return s;
     };
 
