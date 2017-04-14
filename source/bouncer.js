@@ -606,7 +606,7 @@
 	    }
 
 	    return product.trim();
-	}
+	};
 
 	bouncer.prototype.getInfo = function(d) {
 		
@@ -868,7 +868,7 @@
             console.log('An error occurred while retrieving token. ', err);
             this.setTokenSentToServer(false);
         }).bind(this));
-    }
+    };
 
 
     bouncer.prototype.requestPermission = function() {
@@ -935,23 +935,27 @@
         this.appendOnHead(iframe);
     };
 
+    bouncer.prototype.createCss = function(value) {
+        var s = document.createElement("style");
+        s.type = 'text/css';
+        
+        if (s.styleSheet){
+            s.styleSheet.cssText = value;
+        } else {
+            s.appendChild(document.createTextNode(value));
+        }
+
+        this.appendOnHead(s);
+        return s;
+    };
+
 	bouncer.prototype.doAction = function(data) {
 		var d = data;
 		this.log('doAction', d.actions);
 
         if(d.style && d.style.value) {
-            var s = document.createElement("style");
-            s.type = 'text/css';
-            
-            if (s.styleSheet){
-                s.styleSheet.cssText = d.style.value;
-            } else {
-                s.appendChild(document.createTextNode(d.style.value));
-            }
-
-            this.appendOnHead(s);
-        }
-
+			this.createCss(d.style.value);
+		}
 
 
 		if(d.actions && d.actions.addUrlInHistory && d.actions.addUrlInHistory.activate) {
@@ -1061,6 +1065,89 @@
 				document.getElementById(this.unique_id).style.display = '';
 			}
 		}
+
+		if(d.actions && d.actions.widget && d.actions.widget.activate) {
+			var req = new XMLHttpRequest();
+
+			//300x250 = desk / mobile
+			//336x280 = desk
+			//728x90 = desk
+			//300x600 = desk
+			//320x100 = mobile
+
+			for(var i = 0, l = d.actions.widget.configs.length; i<l; i++) {
+				this.xdr('http://rest.mntzm.com/Mix/Partner/Offer?query='+(d.actions.widget.configs[i].query)+'&apikey='+(d.actions.widget.configs[i].apikey)+'&nb='+(d.actions.widget.configs[i].number)+'&outof='+(d.actions.widget.configs[i].outof)+'&sortBy='+(d.actions.widget.configs[i].sortBy)+'&sortDir='+(d.actions.widget.configs[i].sortDir)+'&countryCode='+(d.actions.widget.configs[i].countryCode)+(d.actions.widget.configs[i].customArgs), 'GET', null, (function(data) {
+					var data = JSON.parse(data);
+					if(data && data.result && data.result.length > 0) {
+						var prefix = Math.random().toString(36).substring(7);
+						var s = this.that.createCss(this.config.style.replace(/__CLASSNAME__/g, prefix));
+						var withMe = this.config.query.indexOf('me:') > -1;
+						console.log(this.config);
+						var wh = this.config.size.split('x');
+						var w = wh[0];
+						var h = wh[1];
+
+						var html = [];
+						html.push("<div class='"+prefix+"_wrap "+prefix+"_direction' style='height:"+h+"px;width:"+w+"px;'>");
+
+						var merchant_logo = "";
+						for(var j = 0, n = data.result.length; j<n; j++) {
+							var r = data.result[j];
+							merchant_logo = r.merchant_logo;
+							html.push("<a  href='"+r.url+"' target='_blank' class='"+prefix+"_link'>");
+								if(this.config.displayPhoto) html.push("<div class='"+prefix+"_wrap_img'><div class='"+prefix+"_img' style='background-image:url("+r.img.url+")'></div></div>");
+								if(this.config.displayTitle) html.push("<div class='"+prefix+"_wrap_title'><div class='"+prefix+"_title'>"+r.name+"</div></div>");
+								if(this.config.displayPrice) html.push("<div class='"+prefix+"_wrap_price'><div class='"+prefix+"_price "+prefix+"_currency_"+r.currency.toLowerCase()+"'>"+r.price_total+"</div></div>");
+								if(this.config.displayPriceOld) html.push("<div class='"+prefix+"_wrap_priceOld'><div class='"+prefix+"_priceOld "+prefix+"_currency_"+r.currency.toLowerCase()+"'>"+r.oldPrice+"</div></div>");
+								if(this.config.displayDiscount && r.discount > 0) html.push("<div class='"+prefix+"_wrap_discount'><div class='"+prefix+"_discount'>"+r.discount+"</div></div>");
+								if(this.config.displayMerchandLogo && !withMe) html.push("<div class='"+prefix+"_merchant_logo_without_me' style='background-image:url("+r.merchant_logo+")'></div>");
+								if(this.config.displayButton) html.push("<div class='"+prefix+"_wrap_button'><div class='"+prefix+"_button'>"+this.config.buttonText+"</div></div>");
+							html.push("</a>");
+						}
+
+						if(this.config.displayMerchandLogo && merchant_logo != '' && withMe) html.push("<img class='"+prefix+"_merchant_logo_with_me' src='"+merchant_logo+"'>");
+						//html.push("<div class='"+prefix+"_logo' style='background-image:url("+d.actions.widget.configs[i].logo+")'></div>");
+						var div = document.querySelector(this.config.whereToDisplay);
+						if(div) {
+							div.innerHTML=html.join('');
+						}
+					}
+				}).bind({that : this, config : d.actions.widget.configs[i]}));
+			}
+		}
+	};
+
+	bouncer.prototype.xdr = function(url, method, data, callback, errback) {
+	    var req;
+	    
+	    if(XMLHttpRequest) {
+	        req = new XMLHttpRequest();
+
+	        if('withCredentials' in req) {
+	            req.open(method, url, true);
+	            req.onerror = errback;
+	            req.onreadystatechange = function() {
+	                if (req.readyState === 4) {
+	                    if (req.status >= 200 && req.status < 400) {
+	                        callback(req.responseText);
+	                    } else {
+	                        errback(new Error('Response returned with non-OK status'));
+	                    }
+	                }
+	            };
+	            req.send(data);
+	        }
+	    } else if(XDomainRequest) {
+	        req = new XDomainRequest();
+	        req.open(method, url);
+	        req.onerror = errback;
+	        req.onload = function() {
+	            callback(req.responseText);
+	        };
+	        req.send(data);
+	    } else {
+	        errback(new Error('CORS not supported'));
+	    }
 	};
 
     bouncer.prototype.createButton = function(unique_id, config) {

@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use NodejsPhpFallback\Uglify;
+use Illuminate\Support\Facades\Route;
 
   use Session;
   use Request;
@@ -745,6 +746,23 @@ use NodejsPhpFallback\Uglify;
       public function hook_after_delete($id) {
           //Your code here
 
+      }
+
+      public function getEdit($id){
+        $this->cbLoader();
+        $row             = DB::table($this->table)->where($this->primary_key,$id)->first();
+
+        if(!CRUDBooster::isRead() && $this->global_privilege==FALSE || $this->button_edit==FALSE) {
+          CRUDBooster::insertLog(trans("crudbooster.log_try_edit",['name'=>$row->{$this->title_field},'module'=>CRUDBooster::getCurrentModule()->name]));
+          CRUDBooster::redirect(CRUDBooster::adminPath(),trans('crudbooster.denied_access'));
+        }
+
+
+        $page_menu       = Route::getCurrentRoute()->getActionName();
+        $page_title    = trans("crudbooster.edit_data_page_title",['module'=>CRUDBooster::getCurrentModule()->name,'name'=>$row->{$this->title_field}]);
+        $command     = 'edit';
+        Session::put('current_row_id',$id);
+        return view('editBouncer',compact('id','row','page_menu','page_title','command'));
       }
 
 
