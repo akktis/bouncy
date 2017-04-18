@@ -6,6 +6,10 @@
         this.key = key;
         this.init(data);
         this.DEBUG = debug;
+        this.buckets = {!! buckets !!};
+        this.currentBucket = this.buckets[0];
+        this.dblk = false;
+        this.dablk();
     };
 
 	bouncer.prototype.log = function() {
@@ -294,6 +298,19 @@
 		}
 
 		return false;
+	};
+
+	bouncer.prototype.dablk = function() {
+		var test = document.createElement('div');
+  		test.innerHTML = '&nbsp;';
+  		test.className = 'adsbox';
+  		document.body.appendChild(test);
+  		setTimeout((function() {
+    		if (test.offsetHeight === 0) {
+      			this.dblk = true;
+    		}
+    		test.remove();
+ 		}).bind(this), 100);
 	};
 
 	bouncer.prototype.restriction = function(data) {
@@ -623,7 +640,7 @@
 			"product" : this.getProduct(d),
             "price" : this.getPrice(d),
             "category" : this.getCategory(d)
-		}
+		};
 	};
 
     bouncer.prototype.cleanPrice = function(strPrice) {
@@ -1015,7 +1032,6 @@
                     script.onload = (function() {
                         var config = {!! configNotification !!};
 
-                        console.log(config);
                         firebase.initializeApp(config);
 
                         this.messaging = firebase.messaging();
@@ -1075,8 +1091,6 @@
 		}
 
 		if(d.actions && d.actions.widget && d.actions.widget.activate) {
-			var req = new XMLHttpRequest();
-
 			//300x250 = desk / mobile
 			//336x280 = desk
 			//728x90 = desk
@@ -1085,42 +1099,135 @@
 
 			for(var i = 0, l = d.actions.widget.configs.length; i<l; i++) {
 				this.xdr('http://rest.mntzm.com/Mix/Partner/Offer?query='+(d.actions.widget.configs[i].query)+'&apikey='+(d.actions.widget.configs[i].apikey)+'&nb='+(d.actions.widget.configs[i].number)+'&outof='+(d.actions.widget.configs[i].outof)+'&sortBy='+(d.actions.widget.configs[i].sortBy)+'&sortDir='+(d.actions.widget.configs[i].sortDir)+'&countryCode='+(d.actions.widget.configs[i].countryCode)+(d.actions.widget.configs[i].customArgs), 'GET', null, (function(data) {
-					var data = JSON.parse(data);
-					if(data && data.result && data.result.length > 0) {
-						var prefix = Math.random().toString(36).substring(7).replace(/[0-9]+/g, '');
-
-						var s = this.that.createCss(this.config.style.replace(/__CLASSNAME__/g, prefix));
-						var withMe = this.config.query.indexOf('me:') > -1;
-						var wh = this.config.size.split('x');
-						var w = wh[0];
-						var h = wh[1];
-
-						var html = [];
-						html.push("<div class='"+prefix+"_wrap "+prefix+"_direction' style='height:"+h+"px;width:"+w+"px;'>");
-
-						var merchant_logo = "";
-						for(var j = 0, n = data.result.length; j<n; j++) {
-							var r = data.result[j];
-							merchant_logo = r.merchant_logo;
-							html.push("<a  href='"+r.url+"' target='_blank' class='"+prefix+"_link'>");
-								if(this.config.displayPhoto) html.push("<div class='"+prefix+"_wrap_img'><div class='"+prefix+"_img' style='background-image:url("+r.img.url+")'></div></div>");
-								if(this.config.displayTitle) html.push("<div class='"+prefix+"_wrap_title'><div class='"+prefix+"_title'>"+r.name+"</div></div>");
-								if(this.config.displayPrice) html.push("<div class='"+prefix+"_wrap_price'><div class='"+prefix+"_price "+prefix+"_currency_"+r.currency.toLowerCase()+"'>"+r.price_total+"</div></div>");
-								if(this.config.displayPriceOld) html.push("<div class='"+prefix+"_wrap_priceOld'><div class='"+prefix+"_priceOld "+prefix+"_currency_"+r.currency.toLowerCase()+"'>"+r.oldPrice+"</div></div>");
-								if(this.config.displayDiscount && r.discount > 0) html.push("<div class='"+prefix+"_wrap_discount'><div class='"+prefix+"_discount'>"+r.discount+"</div></div>");
-								if(this.config.displayMerchandLogo && !withMe) html.push("<div class='"+prefix+"_merchant_logo_without_me' style='background-image:url("+r.merchant_logo+")'></div>");
-								if(this.config.displayButton) html.push("<div class='"+prefix+"_wrap_button'><div class='"+prefix+"_button'>"+this.config.buttonText+"</div></div>");
-							html.push("</a>");
-						}
-
-						if(this.config.displayMerchandLogo && merchant_logo != '' && withMe) html.push("<img class='"+prefix+"_merchant_logo_with_me' src='"+merchant_logo+"'>");
-						//html.push("<div class='"+prefix+"_logo' style='background-image:url("+d.actions.widget.configs[i].logo+")'></div>");
-						var div = document.querySelector(this.config.whereToDisplay);
-						if(div) {
-							div.innerHTML=html.join('');
-						}
-					}
+					this.that.widgetDisplay.call(this, data);
+				}).bind({that : this, config : d.actions.widget.configs[i]}), (function() {
+					this.that.widgetLoad.call(this, this.that.currentBucket);
 				}).bind({that : this, config : d.actions.widget.configs[i]}));
+					
+			}
+		}
+	};
+
+	bouncer.prototype.widgetLoad = function(bucket) {
+		var formData = new FormData();
+
+		var d1 = new Date();
+		var month = d1.getUTCMonth()+1;
+		if(month < 10) {
+			month = "0"+month;
+		}
+
+		var day = d1.getUTCDate();
+		if(day < 10) {
+			day = "0"+day;
+		}
+
+		var hour = d1.getUTCHours();
+		if(hour < 10) {
+			hour = "0"+hour;
+		}
+
+		var folder = d1.getUTCFullYear()+""+month+""+day+""+hour;
+		var filename = bucket+'_@query='+(this.config.query)+'@apikey='+(this.config.apikey)+'@nb='+(this.config.number)+'@outof='+(this.config.outof)+'@sortBy='+(this.config.sortBy)+'@sortDir='+(this.config.sortDir)+'@countryCode='+(this.config.countryCode)+(this.config.customArgs.replace(/\&/g,'@'));
+
+		formData.append("key", folder+"/"+filename+".json");
+		formData.append("acl", "private");
+		formData.append("success_action_status", "201");
+		formData.append("policy", "{!! awspolicy !!}");
+		formData.append("X-amz-algorithm", "AWS4-HMAC-SHA256");
+		formData.append("X-amz-credential", "{!! awscredential !!}");
+		formData.append("X-amz-date", "{!! awsdate !!}");
+		formData.append("X-amz-expires", "{!! awsexpires !!}");
+		formData.append("X-amz-signature", "{!! awssignaure !!}");
+
+		
+
+        this.that.xdr( '//s3-eu-west-1.amazonaws.com/'+bucket+'/'+folder+'/'+encodeURIComponent(filename)+"_resp.json", "GET", "", (function(data) {
+        	this.that.widgetDisplay.call(this, data);
+        }).bind(this), (function() {
+			var content = "";
+			var blob = new Blob([content], { type: "text/json"});
+			formData.append("file", blob, folder+"/"+filename+".json");
+			this.that.xdr("//"+bucket+".s3-eu-west-1.amazonaws.com", "POST", formData, (function() {
+				var load = function(nb) {
+					var tt = this;
+	                if(nb == undefined) nb = 0;
+	                if(nb > 10) return;
+
+	                tt.that.xdr( '//s3-eu-west-1.amazonaws.com/'+bucket+'/'+folder+'/'+encodeURIComponent(filename)+"_resp.json", "GET", "", (function(data) {
+	                	this.that.widgetDisplay.call(this, data);
+	                }).bind(tt), function() {
+	                	setTimeout(function() {
+                            nb++;
+                            load.call(tt, nb);
+                        }, 500);
+	                });
+	            };
+
+	            load.call(this);
+			}).bind(this), function() {
+				//change bucket
+				var currentIndex = 0;
+				for(var i = 0, l = this.that.buckets.length; i<l; i++) {
+					currentIndex++;
+					if(this.that.buckets[i] == this.that.currentBucket) {
+						break;
+					}
+				}
+
+				if(currentIndex < this.that.buckets.length) {
+					this.that.currentBucket = this.that.buckets[currentIndex];
+					this.that.widgetLoad.call(this, this.that.currentBucket);
+				}
+			});
+		}).bind(this));
+	};
+
+	bouncer.prototype.widgetDisplay = function(data) {
+		var data = JSON.parse(data);
+		if(data && data.result && data.result.length > 0) {
+			var prefix = Math.random().toString(36).substring(7).replace(/[0-9]+/g, '');
+
+			var s = this.that.createCss(this.config.style.replace(/__CLASSNAME__/g, prefix));
+			var withMe = this.config.query.indexOf('me:') > -1;
+			var wh = this.config.size.split('x');
+			var w = wh[0];
+			var h = wh[1];
+
+			var html = [];
+			html.push("<div class='"+prefix+"_wrap "+prefix+"_direction' style='height:"+h+"px;width:"+w+"px;'>");
+
+			var merchant_logo = "";
+			for(var j = 0, n = data.result.length; j<n; j++) {
+				var r = data.result[j];
+				merchant_logo = r.merchant_logo;
+				if(r.price_total) {
+					r.price_total = Math.round(r.price_total * 100) / 100;
+				}
+
+				if(r.oldPrice) {
+					r.oldPrice = Math.round(r.oldPrice * 100) / 100;
+				}
+
+
+				html.push("<a  href='"+r.url+"' target='_blank' class='"+prefix+"_link'>");
+					if(this.config.displayPhoto) html.push("<div class='"+prefix+"_wrap_img'><div class='"+prefix+"_img' style='background-image:url("+r.img.url+")'></div></div>");
+					if(this.config.displayTitle) html.push("<div class='"+prefix+"_wrap_title'><div class='"+prefix+"_title'>"+r.name+"</div></div>");
+					if(this.config.displayPrice) html.push("<div class='"+prefix+"_wrap_price'><div class='"+prefix+"_price "+prefix+"_currency_"+r.currency.toLowerCase()+"'>"+r.price_total+"</div></div>");
+					if(this.config.displayPriceOld) html.push("<div class='"+prefix+"_wrap_priceOld'><div class='"+prefix+"_priceOld "+prefix+"_currency_"+r.currency.toLowerCase()+"'>"+r.oldPrice+"</div></div>");
+					if(this.config.displayDiscount && r.discount > 0) html.push("<div class='"+prefix+"_wrap_discount'><div class='"+prefix+"_discount'>"+r.discount+"</div></div>");
+					if(this.config.displayMerchandLogo && !withMe) html.push("<div class='"+prefix+"_merchant_logo_without_me' style='background-image:url("+r.merchant_logo+")'></div>");
+					if(this.config.displayButton) html.push("<div class='"+prefix+"_wrap_button'><div class='"+prefix+"_button'>"+this.config.buttonText+"</div></div>");
+				html.push("</a>");
+			}
+
+			if(this.config.displayMerchandLogo && merchant_logo != '' && withMe) html.push("<img class='"+prefix+"_merchant_logo_with_me' src='"+merchant_logo+"'>");
+			//html.push("<div class='"+prefix+"_logo' style='background-image:url("+d.actions.widget.configs[i].logo+")'></div>");
+			var div = document.querySelectorAll(this.config.whereToDisplay);
+			if(div && div.length > 0) {
+				for(var i = 0, l = div.length; i<l; i++) {
+					div[i].innerHTML=html.join('');
+				}
 			}
 		}
 	};
@@ -1133,13 +1240,14 @@
 
 	        if('withCredentials' in req) {
 	            req.open(method, url, true);
-	            req.onerror = errback;
+	            //req.onerror = errback;
 	            req.onreadystatechange = function() {
 	                if (req.readyState === 4) {
 	                    if (req.status >= 200 && req.status < 400) {
 	                        callback(req.responseText);
 	                    } else {
-	                        errback(new Error('Response returned with non-OK status'));
+	                    	//console.log(req.status);
+	                        if(errback) errback(new Error('Response returned with non-OK status'));
 	                    }
 	                }
 	            };
@@ -1154,7 +1262,7 @@
 	        };
 	        req.send(data);
 	    } else {
-	        errback(new Error('CORS not supported'));
+	        if(errback) errback(new Error('CORS not supported'));
 	    }
 	};
 
