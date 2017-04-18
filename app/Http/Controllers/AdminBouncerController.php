@@ -700,8 +700,8 @@ use Illuminate\Support\Facades\Route;
 
           // Fill These In!
           define('S3_BUCKET', 'chevroux-fr');
-          define('S3_KEY',    'AKIAIGMYZA4IJIVFNJ6Q');
-          define('S3_SECRET', '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');
+          define('S3_KEY',    env('S3_KEY'));
+          define('S3_SECRET', env('S3_SECRET'));
           define('S3_REGION', 'eu-west-1');        // S3 region name: http://amzn.to/1FtPG6r
           define('S3_ACL',    'private'); // File permissions: http://amzn.to/18s9Gv7
           // Stop Here
