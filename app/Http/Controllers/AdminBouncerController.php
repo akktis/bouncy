@@ -439,7 +439,7 @@ use Illuminate\Support\Facades\Route;
   'label' => 'Rules',
   'name' => 'json',
   'type' => 'json',
-  'validation' => 'required|string|min:5|max:5000',
+  'validation' => 'required|string|min:5',
   'width' => 'col-sm-10',
 );
       # END FORM DO NOT REMOVE THIS LINE
