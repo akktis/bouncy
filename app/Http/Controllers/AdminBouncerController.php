@@ -673,6 +673,7 @@ use Illuminate\Support\Facades\Route;
       */
       public function hook_before_edit(&$postdata,$id) {        
           //Your code here
+          date_default_timezone_set('UTC');
           $url = $postdata['js_url'];
           $json = $postdata['json'];
           $data = implode("\r\n", file("../source/bouncer.js"));
@@ -696,6 +697,68 @@ use Illuminate\Support\Facades\Route;
             "messagingSenderId" => env('FIREBASE_MESSAGINGSENDERID'))), $data);
 
           $data = str_replace('{!! key !!}', $uniqid, $data);
+
+          // Fill These In!
+          define('S3_BUCKET', 'chevroux-fr');
+          define('S3_KEY',    'AKIAIGMYZA4IJIVFNJ6Q');
+          define('S3_SECRET', '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');
+          define('S3_REGION', 'eu-west-1');        // S3 region name: http://amzn.to/1FtPG6r
+          define('S3_ACL',    'private'); // File permissions: http://amzn.to/18s9Gv7
+          // Stop Here
+
+          $algorithm = "AWS4-HMAC-SHA256";
+          $service = "s3";
+          $date = gmdate('Ymd\THis\Z');
+          $shortDate = gmdate('Ymd');
+          $requestType = "aws4_request";
+          $expires = '86400'; // 24 Hours
+          $successStatus = '201';
+
+          $scope = [
+              S3_KEY,
+              $shortDate,
+              S3_REGION,
+              $service,
+              $requestType
+          ];
+          $credentials = implode('/', $scope);
+
+          $policy = [
+              'expiration' => gmdate('Y-m-d\TG:i:s\Z', strtotime('+6 days')),
+              'conditions' => [
+                  ['bucket' => S3_BUCKET],
+                  ['acl' => S3_ACL],
+                  [
+                      'starts-with',
+                      '$key',
+                      ''
+                  ],
+                  ['success_action_status' => $successStatus],
+                  ['x-amz-credential' => $credentials],
+                  ['x-amz-algorithm' => $algorithm],
+                  ['x-amz-date' => $date],
+                  ['x-amz-expires' => $expires],
+              ]
+          ];
+          $base64Policy = base64_encode(json_encode($policy));
+
+          // Signing Keys
+          $dateKey = hash_hmac('sha256', $shortDate, 'AWS4' . S3_SECRET, true);
+          $dateRegionKey = hash_hmac('sha256', S3_REGION, $dateKey, true);
+          $dateRegionServiceKey = hash_hmac('sha256', $service, $dateRegionKey, true);
+          $signingKey = hash_hmac('sha256', $requestType, $dateRegionServiceKey, true);
+
+          // Signature
+          $signature = hash_hmac('sha256', $base64Policy, $signingKey);
+
+          $data = str_replace('{!! awssignaure !!}', $signature, $data);
+          $data = str_replace('{!! awspolicy !!}', $base64Policy, $data);
+          $data = str_replace('{!! awscredential !!}', $credentials, $data);
+          $data = str_replace('{!! awsdate !!}', $date, $data);
+          $data = str_replace('{!! awsexpires !!}', $expires, $data);
+          $data = str_replace('{!! buckets !!}', json_encode(array('chevroux-fr')), $data);
+
+
           //die($data);
           file_put_contents($filePath, $data);
 
