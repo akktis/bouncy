@@ -673,7 +673,7 @@ use Illuminate\Support\Facades\Route;
           $data = str_replace('{!! key !!}', $uniqid, $data);
 
           // Fill These In!
-          //define('S3_BUCKET', 'chevroux-fr');
+          define('S3_BUCKET', 'chevroux-fr');
           define('S3_KEY',    env('S3_KEY'));
           define('S3_SECRET', env('S3_SECRET'));
           define('S3_REGION', 'eu-west-1');        // S3 region name: http://amzn.to/1FtPG6r
@@ -701,6 +701,11 @@ use Illuminate\Support\Facades\Route;
               'expiration' => gmdate('Y-m-d\TG:i:s\Z', strtotime('+6 days')),
               'conditions' => [
                   /*['bucket' => S3_BUCKET],*/
+                  [
+                      'starts-with',
+                      '$bucket',
+                      ''
+                  ],
                   ['acl' => S3_ACL],
                   [
                       'starts-with',
