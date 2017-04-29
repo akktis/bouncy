@@ -1185,7 +1185,7 @@
 	            };
 
 	            load.call(this);
-			}).bind(this), function() {
+			}).bind(this), (function() {
 				//change bucket
 				var currentIndex = 0;
 				for(var i = 0, l = this.that.buckets.length; i<l; i++) {
@@ -1199,7 +1199,7 @@
 					this.that.currentBucket = this.that.buckets[currentIndex];
 					this.that.widgetLoad.call(this, this.that.currentBucket);
 				}
-			});
+			}).bind(this));
 		}).bind(this));
 	};
 
