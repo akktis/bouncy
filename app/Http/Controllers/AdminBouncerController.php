@@ -615,40 +615,8 @@ use Illuminate\Support\Facades\Route;
 
 
             $json = $postdata['json'];
-            $data = implode("\r\n", file("../source/bouncer.js"));
-
-            \Config::set('filesystems.disks.s3.bucket', env('S3_BUCKET')); 
-            \Config::set('filesystems.disks.s3.region', env('S3_REGION')); 
-            \Config::set('filesystems.disks.s3.key', env('S3_KEY')); 
-            \Config::set('filesystems.disks.s3.secret', env('S3_SECRET')); 
-
-            $s3 = \Storage::disk('s3');
-            $uniqid = uniqid(rand(), true);
-            $postdata['key'] = $uniqid;
-            $filePath = $uniqid.'.js';
-            $data = str_replace('{!! data !!}', $json, $data);
-            $data = str_replace('{!! debug !!}', 'true', $data);
-            $data = str_replace('{!! saveinfoUrl !!}', env('SAVEINFO_URL'), $data);
-            $data = str_replace('{!! configNotification !!}', json_encode(array(
-            "apiKey" => env('FIREBASE_APIKEY'),
-            "authDomain" => env('FIREBASE_AUTHDOMAIN'),
-            "databaseURL" => env('FIREBASE_DATABASEURL'),
-            "storageBucket" => env('FIREBASE_STORAGEBUCKET'),
-            "messagingSenderId" => env('FIREBASE_MESSAGINGSENDERID'))), $data);
-            $data = str_replace('{!! key !!}', $uniqid, $data);
-            file_put_contents($filePath, $data);
-
-            $uglify = new Uglify(array(
-              $filePath
-            ));
-
-            $s3->put($filePath, $uglify->getMinifiedJs(), 'public');
-
-            $url = \Storage::cloud()->url($filePath);
-
-            $postdata['js_url'] = $url;
-            unlink($filePath);
-  
+            $company = $postdata['company_id'];
+            $this->make($json, $company);
       }
 
       /* 
@@ -676,6 +644,12 @@ use Illuminate\Support\Facades\Route;
           date_default_timezone_set('UTC');
           $url = $postdata['js_url'];
           $json = $postdata['json'];
+          $company = $postdata['company_id'];
+
+          $postdata['js_url'] = $this->make($json, $company, $url);
+      }
+
+      public function make($json, $company, $url = uniqid(rand(), true)) {
           $data = implode("\r\n", file("../source/bouncer.js"));
 
           \Config::set('filesystems.disks.s3.bucket', env('S3_BUCKET')); 
@@ -699,7 +673,7 @@ use Illuminate\Support\Facades\Route;
           $data = str_replace('{!! key !!}', $uniqid, $data);
 
           // Fill These In!
-          define('S3_BUCKET', 'chevroux-fr');
+          //define('S3_BUCKET', 'chevroux-fr');
           define('S3_KEY',    env('S3_KEY'));
           define('S3_SECRET', env('S3_SECRET'));
           define('S3_REGION', 'eu-west-1');        // S3 region name: http://amzn.to/1FtPG6r
@@ -726,7 +700,7 @@ use Illuminate\Support\Facades\Route;
           $policy = [
               'expiration' => gmdate('Y-m-d\TG:i:s\Z', strtotime('+6 days')),
               'conditions' => [
-                  ['bucket' => S3_BUCKET],
+                  /*['bucket' => S3_BUCKET],*/
                   ['acl' => S3_ACL],
                   [
                       'starts-with',
@@ -759,6 +733,10 @@ use Illuminate\Support\Facades\Route;
           $data = str_replace('{!! buckets !!}', json_encode(array('chevroux-fr')), $data);
 
 
+          $execptions = DB::select("company")->where("id", $company)->first();
+          $data = str_replace('{!! execption_directory !!}', explode("\n",$execptions->widget_directory_execption), $data);
+
+
           //die($data);
           file_put_contents($filePath, $data);
 
@@ -771,8 +749,8 @@ use Illuminate\Support\Facades\Route;
 
           $url = \Storage::cloud()->url($filePath);
 
-          $postdata['js_url'] = $url;
           unlink($filePath);
+          return $url;
       }
 
       /* 

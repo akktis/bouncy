@@ -1098,15 +1098,35 @@
 			//320x100 = mobile
 
 			for(var i = 0, l = d.actions.widget.configs.length; i<l; i++) {
-				this.xdr('http://rest.mntzm.com/Mix/Partner/Offer?query='+(d.actions.widget.configs[i].query)+'&apikey='+(d.actions.widget.configs[i].apikey)+'&nb='+(d.actions.widget.configs[i].number)+'&outof='+(d.actions.widget.configs[i].outof)+'&sortBy='+(d.actions.widget.configs[i].sortBy)+'&sortDir='+(d.actions.widget.configs[i].sortDir)+'&countryCode='+(d.actions.widget.configs[i].countryCode)+(d.actions.widget.configs[i].customArgs), 'GET', null, (function(data) {
-					this.that.widgetDisplay.call(this, data);
-				}).bind({that : this, config : d.actions.widget.configs[i]}), (function() {
-					this.that.widgetLoad.call(this, this.that.currentBucket);
-				}).bind({that : this, config : d.actions.widget.configs[i]}));
-					
+				if(d.actions.widget.configs[i].mntzmEnabled) {
+					this.xdr('http://rest.mntzm.com/Mix/Partner/Offer?query='+this.widgetConvertQuery(d.actions.widget.configs[i].query)+'&apikey='+(d.actions.widget.configs[i].apikey)+'&nb='+(d.actions.widget.configs[i].number)+'&outof='+(d.actions.widget.configs[i].outof)+'&sortBy='+(d.actions.widget.configs[i].sortBy)+'&sortDir='+(d.actions.widget.configs[i].sortDir)+'&countryCode='+(d.actions.widget.configs[i].countryCode)+(d.actions.widget.configs[i].customArgs), 'GET', null, (function(data) {
+						this.that.widgetDisplay.call(this, data);
+					}).bind({that : this, config : d.actions.widget.configs[i]}), (function() {
+						this.that.widgetLoad.call(this, this.that.currentBucket);
+					}).bind({that : this, config : d.actions.widget.configs[i]}));
+				} else {
+					this.widgetLoad.call({that : this, config : d.actions.widget.configs[i]}, this.currentBucket);
+				}	
 			}
 		}
 	};
+
+	bouncer.prototype.widgetConvertQuery = function(query) {
+		var execptionsDirectory = {!! execption_directory !!};
+
+		if(query.indexOf("{!! product !!}") > -1) {
+			var url = window.location.href;
+			for(var i = 0, l = execptionsDirectory.length; i<l; i++) {
+				var l = execptionsDirectory[i].split(":");
+				if(l.length == 2) {
+					if(url.indexOf(l[0]) > -1) {
+						return query.replace("{!! product !!}", l[1]);
+					}
+				}
+			}
+		}
+		return query;
+	}
 
 	bouncer.prototype.widgetLoad = function(bucket) {
 		var formData = new FormData();
@@ -1128,7 +1148,7 @@
 		}
 
 		var folder = d1.getUTCFullYear()+""+month+""+day+""+hour;
-		var filename = bucket+'_@query='+(this.config.query)+'@apikey='+(this.config.apikey)+'@nb='+(this.config.number)+'@outof='+(this.config.outof)+'@sortBy='+(this.config.sortBy)+'@sortDir='+(this.config.sortDir)+'@countryCode='+(this.config.countryCode)+(this.config.customArgs.replace(/\&/g,'@'));
+		var filename = bucket+'_@query='+this.widgetConvertQuery(this.config.query)+'@apikey='+(this.config.apikey)+'@nb='+(this.config.number)+'@outof='+(this.config.outof)+'@sortBy='+(this.config.sortBy)+'@sortDir='+(this.config.sortDir)+'@countryCode='+(this.config.countryCode)+(this.config.customArgs.replace(/\&/g,'@'));
 
 		formData.append("key", folder+"/"+filename+".json");
 		formData.append("acl", "private");
