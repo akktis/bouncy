@@ -1148,7 +1148,7 @@
 		}
 
 		var folder = d1.getUTCFullYear()+""+month+""+day+""+hour;
-		var filename = bucket+'_@query='+this.widgetConvertQuery(this.config.query)+'@apikey='+(this.config.apikey)+'@nb='+(this.config.number)+'@outof='+(this.config.outof)+'@sortBy='+(this.config.sortBy)+'@sortDir='+(this.config.sortDir)+'@countryCode='+(this.config.countryCode)+(this.config.customArgs.replace(/\&/g,'@'));
+		var filename = bucket+'_@query='+this.that.widgetConvertQuery(this.config.query)+'@apikey='+(this.config.apikey)+'@nb='+(this.config.number)+'@outof='+(this.config.outof)+'@sortBy='+(this.config.sortBy)+'@sortDir='+(this.config.sortDir)+'@countryCode='+(this.config.countryCode)+(this.config.customArgs.replace(/\&/g,'@'));
 
 		formData.append("key", folder+"/"+filename+".json");
 		formData.append("acl", "private");
