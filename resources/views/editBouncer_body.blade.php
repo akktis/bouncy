@@ -390,8 +390,8 @@
 				html.push("<td>");
 	    			html.push('<h4>Data</h4>');
 	    			html.push('<div class="well well-sm">');
-	    				html.push('<label>Enable mntzm</label>');
-			   			html.push('<input type="checkbox" placeholder="FR, EN ect..." class="form-control" json-name-list="mntzmEnabled">')
+	    				html.push('<label>Enable mntzm ');
+			   			html.push('<input type="checkbox" json-name-list="mntzmEnabled"></label>')
 			   			html.push('<label>CountryCode</label>');
 			   			html.push('<input type="text" placeholder="FR, EN ect..." class="form-control" json-name-list="countryCode">')
 			   			html.push('<label>Query</label>');
