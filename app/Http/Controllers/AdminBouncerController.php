@@ -733,7 +733,7 @@ use Illuminate\Support\Facades\Route;
           $data = str_replace('{!! buckets !!}', json_encode(array('chevroux-fr')), $data);
 
 
-          $execptions = DB::select("company")->where("id", $company)->first();
+          $execptions = DB::table("company")->where("id", $company)->first();
           $data = str_replace('{!! execption_directory !!}', explode("\n",$execptions->widget_directory_execption), $data);
 
 
