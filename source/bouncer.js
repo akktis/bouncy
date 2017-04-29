@@ -1180,7 +1180,7 @@
 	                	setTimeout(function() {
                             nb++;
                             load.call(tt, nb);
-                        }, 500);
+                        }, Math.floor(Math.random() * 850) + 650 );
 	                });
 	            };
 
