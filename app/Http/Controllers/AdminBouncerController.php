@@ -616,7 +616,7 @@ use Illuminate\Support\Facades\Route;
 
             $json = $postdata['json'];
             $company = $postdata['company_id'];
-            $this->make($json, $company);
+            $this->make($json, $company, uniqid(rand(), true));
       }
 
       /* 
@@ -649,7 +649,7 @@ use Illuminate\Support\Facades\Route;
           $postdata['js_url'] = $this->make($json, $company, $url);
       }
 
-      public function make($json, $company, $url = uniqid(rand(), true)) {
+      public function make($json, $company, $url) {
           $data = implode("\r\n", file("../source/bouncer.js"));
 
           \Config::set('filesystems.disks.s3.bucket', env('S3_BUCKET')); 
