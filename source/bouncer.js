@@ -1108,10 +1108,10 @@
 			this.xdr('http://rest.mntzm.com/Mix/Partner/Offer?query='+this.widgetConvertQuery((querybackup === true ? config.querybackup :config.query))+'&apikey='+(config.apikey)+'&nb='+(config.number)+'&outof='+(config.outof)+'&sortBy='+(config.sortBy)+'&sortDir='+(config.sortDir)+'&countryCode='+(config.countryCode)+(config.customArgs), 'GET', null, (function(data) {
 				this.that.widgetDisplay.call(this, data);
 			}).bind({that : this, config : config}), (function() {
-				this.that.widgetLoad.call(this, this.that.currentBucket);
+				this.that.widgetLoad.call(this, this.that.currentBucket, querybackup);
 			}).bind({that : this, config : config}));
 		} else {
-			this.widgetLoad.call({that : this, config : config}, this.currentBucket);
+			this.widgetLoad.call({that : this, config : config}, this.currentBucket, querybackup);
 		}
 	};
 
@@ -1132,7 +1132,7 @@
 		return query;
 	}
 
-	bouncer.prototype.widgetLoad = function(bucket) {
+	bouncer.prototype.widgetLoad = function(bucket, querybackup) {
 		var formData = new FormData();
 
 		var d1 = new Date();
@@ -1152,7 +1152,7 @@
 		}
 
 		var folder = d1.getUTCFullYear()+""+month+""+day+""+hour;
-		var filename = bucket+'_@query='+this.that.widgetConvertQuery(this.config.query)+'@apikey='+(this.config.apikey)+'@nb='+(this.config.number)+'@outof='+(this.config.outof)+'@sortBy='+(this.config.sortBy)+'@sortDir='+(this.config.sortDir)+'@countryCode='+(this.config.countryCode)+(this.config.customArgs.replace(/\&/g,'@'));
+		var filename = bucket+'_@query='+this.that.widgetConvertQuery((querybackup === true ? this.config.querybackup : this.config.query))+'@apikey='+(this.config.apikey)+'@nb='+(this.config.number)+'@outof='+(this.config.outof)+'@sortBy='+(this.config.sortBy)+'@sortDir='+(this.config.sortDir)+'@countryCode='+(this.config.countryCode)+(this.config.customArgs.replace(/\&/g,'@'));
 
 		formData.append("key", folder+"/"+filename+".json");
 		formData.append("acl", "private");
