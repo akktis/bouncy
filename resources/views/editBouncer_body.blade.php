@@ -396,6 +396,8 @@
 			   			html.push('<input type="text" placeholder="FR, EN ect..." class="form-control" json-name-list="countryCode">')
 			   			html.push('<label>Query</label>');
 			   			html.push('<input type="text" placeholder="cy:catergory, me:merchant, free text" class="form-control" json-name-list="query">')
+			   			html.push('<label>Query Backup <sup>if no result with query we will use this one as a backup</sup></label>');
+			   			html.push('<input type="text" placeholder="cy:catergory, me:merchant, free text" class="form-control" json-name-list="querybackup">')
 			   			html.push('<label>Number</label>');
 			   			html.push('<input type="text" placeholder="Number of result would you like to display" class="form-control" json-name-list="number">')
 			   			html.push('<label>OutOf</label>');

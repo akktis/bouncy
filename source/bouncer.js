@@ -1098,16 +1098,20 @@
 			//320x100 = mobile
 
 			for(var i = 0, l = d.actions.widget.configs.length; i<l; i++) {
-				if(d.actions.widget.configs[i].mntzmEnabled) {
-					this.xdr('http://rest.mntzm.com/Mix/Partner/Offer?query='+this.widgetConvertQuery(d.actions.widget.configs[i].query)+'&apikey='+(d.actions.widget.configs[i].apikey)+'&nb='+(d.actions.widget.configs[i].number)+'&outof='+(d.actions.widget.configs[i].outof)+'&sortBy='+(d.actions.widget.configs[i].sortBy)+'&sortDir='+(d.actions.widget.configs[i].sortDir)+'&countryCode='+(d.actions.widget.configs[i].countryCode)+(d.actions.widget.configs[i].customArgs), 'GET', null, (function(data) {
-						this.that.widgetDisplay.call(this, data);
-					}).bind({that : this, config : d.actions.widget.configs[i]}), (function() {
-						this.that.widgetLoad.call(this, this.that.currentBucket);
-					}).bind({that : this, config : d.actions.widget.configs[i]}));
-				} else {
-					this.widgetLoad.call({that : this, config : d.actions.widget.configs[i]}, this.currentBucket);
-				}	
+				this.widgetMake(d.actions.widget.configs[i]);
 			}
+		}
+	};
+
+	bouncer.prototype.widgetMake = function(config, querybackup) {
+		if(config.mntzmEnabled) {
+			this.xdr('http://rest.mntzm.com/Mix/Partner/Offer?query='+this.widgetConvertQuery((querybackup === true ? config.querybackup :config.query))+'&apikey='+(config.apikey)+'&nb='+(config.number)+'&outof='+(config.outof)+'&sortBy='+(config.sortBy)+'&sortDir='+(config.sortDir)+'&countryCode='+(config.countryCode)+(config.customArgs), 'GET', null, (function(data) {
+				this.that.widgetDisplay.call(this, data);
+			}).bind({that : this, config : config}), (function() {
+				this.that.widgetLoad.call(this, this.that.currentBucket);
+			}).bind({that : this, config : config}));
+		} else {
+			this.widgetLoad.call({that : this, config : config}, this.currentBucket);
 		}
 	};
 
@@ -1248,6 +1252,10 @@
 				for(var i = 0, l = div.length; i<l; i++) {
 					div[i].innerHTML=html.join('');
 				}
+			}
+		} else {
+			if(this.config.querybackup) {
+				this.that.widgetMake(this.config, true);
 			}
 		}
 	};
