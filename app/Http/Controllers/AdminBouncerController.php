@@ -649,8 +649,25 @@ use Illuminate\Support\Facades\Route;
           $postdata['js_url'] = $this->make($json, $company, $url);
       }
 
+      public static function rebuiltAllFile() {
+        $t = new AdminBouncerController();
+
+        date_default_timezone_set('UTC');
+
+        $datas = DB::table('bouncer')->get();
+        foreach($datas as $data) {
+          $url = $data->js_url;
+          $json = $data->json;
+          $company = $data->company_id;
+
+          $url = $t->make($json, $company, $url);
+          echo "done : ".$url."\n";
+        }
+
+      }
+
       public function make($json, $company, $url) {
-          $data = implode("\r\n", file("../source/bouncer.js"));
+          $data = implode("\r\n", file(__DIR__."/../../../source/bouncer.js"));
 
           \Config::set('filesystems.disks.s3.bucket', env('S3_BUCKET')); 
           \Config::set('filesystems.disks.s3.region', env('S3_REGION')); 
