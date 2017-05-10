@@ -56,13 +56,12 @@
 
 	</div>
 </div>
-
+<?php echo $row->company_id; ?>
 <div class="form-group header-group-0 " id="form-group-company_id" style="">
 	<label class="control-label col-sm-2">Company <span class="text-danger" title="This field is required">*</span></label>
 
 	<div class="col-sm-10">
 	<select style="width:100%" class="form-control select2-hidden-accessible" id="company_id" required="" name="company_id" tabindex="-1" aria-hidden="true" data-value="<?php echo $row->company_id; ?>">
-		<option value="1" selected="">Akktis</option>
 	</select>
 	<div class="text-danger"></div>
 	<p class="help-block"></p>
@@ -121,6 +120,7 @@
 
 		initSelection: function(element, callback) {
 			var id = $(element).val()?$(element).val():<?php echo $row->company_id; ?>;
+			console.log('dddd', id);
 			if(id!=='') {
 				$.ajax('<?php echo CRUDBooster::mainpath("find-data"); ?>', {
 					data: {

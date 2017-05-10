@@ -36,8 +36,42 @@
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ["label"=>"Name","name"=>"name","type"=>"text","validation"=>"required|string|min:3|max:70","width"=>"col-sm-10","placeholder"=>"You can only enter the letter only"];
-			$this->form[] = ["label"=>"Url","name"=>"url","type"=>"text","validation"=>"required|url","width"=>"col-sm-10","placeholder"=>"Please enter a valid URL"];
+			$this->form[] = array (
+  'style' => '',
+  'help' => '',
+  'placeholder' => 'You can only enter the letter only',
+  'readonly' => '',
+  'disabled' => '',
+  'label' => 'Name',
+  'name' => 'name',
+  'type' => 'text',
+  'validation' => 'required|string|min:3|max:70',
+  'width' => 'col-sm-10',
+);
+			$this->form[] = array (
+  'style' => '',
+  'help' => '',
+  'placeholder' => 'Please enter a valid URL',
+  'readonly' => '',
+  'disabled' => '',
+  'label' => 'Url',
+  'name' => 'url',
+  'type' => 'text',
+  'validation' => 'required|url',
+  'width' => 'col-sm-10',
+);
+			$this->form[] = array (
+  'style' => '',
+  'help' => 'here you can put a list of your execption in catch for the widget',
+  'placeholder' => 'text-in-url:query',
+  'readonly' => '',
+  'disabled' => '',
+  'label' => 'Widget Directory Execptions',
+  'name' => 'widget_directory_execption',
+  'type' => 'textarea',
+  'validation' => '',
+  'width' => 'col-sm-10',
+);
 			# END FORM DO NOT REMOVE THIS LINE
 
 			/* 
