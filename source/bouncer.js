@@ -1124,12 +1124,12 @@
 				var l = execptionsDirectory[i].split(":");
 				if(l.length == 2) {
 					if(url.indexOf(l[0]) > -1) {
-						return query.replace("{!! product !!}", l[1]);
+						return encodeURIComponent(query.replace("{!! product !!}", l[1]).replace(" ", "+"));
 					}
 				}
 			}
 		}
-		return query;
+		return encodeURIComponent(query.replace(" ", "+"));
 	}
 
 	bouncer.prototype.widgetLoad = function(bucket, querybackup) {
