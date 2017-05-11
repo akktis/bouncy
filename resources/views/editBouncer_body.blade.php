@@ -56,7 +56,6 @@
 
 	</div>
 </div>
-<?php echo $row->company_id; ?>
 <div class="form-group header-group-0 " id="form-group-company_id" style="">
 	<label class="control-label col-sm-2">Company <span class="text-danger" title="This field is required">*</span></label>
 
@@ -120,7 +119,6 @@
 
 		initSelection: function(element, callback) {
 			var id = $(element).val()?$(element).val():<?php echo $row->company_id; ?>;
-			console.log('dddd', id);
 			if(id!=='') {
 				$.ajax('<?php echo CRUDBooster::mainpath("find-data"); ?>', {
 					data: {
@@ -394,7 +392,7 @@
 			   			html.push('<input type="checkbox" json-name-list="mntzmEnabled"></label><br>')
 			   			html.push('<label>CountryCode</label>');
 			   			html.push('<input type="text" placeholder="FR, EN ect..." class="form-control" json-name-list="countryCode">')
-			   			html.push('<label>Query</label>');
+			   			html.push('<label>Query <sup>You can use {!! product !!} to change dynamicaly with your url dictionary</sup></label>');
 			   			html.push('<input type="text" placeholder="cy:catergory, me:merchant, free text" class="form-control" json-name-list="query">')
 			   			html.push('<label>Query Backup <sup>if no result with query we will use this one as a backup</sup></label>');
 			   			html.push('<input type="text" placeholder="cy:catergory, me:merchant, free text" class="form-control" json-name-list="querybackup">')
