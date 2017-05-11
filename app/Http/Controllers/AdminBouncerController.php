@@ -690,7 +690,7 @@ use Illuminate\Support\Facades\Route;
           $data = str_replace('{!! key !!}', $uniqid, $data);
 
           // Fill These In!
-          define('S3_BUCKET', 'chevroux-fr');
+          //define('S3_BUCKET', 'chevroux-fr');
           define('S3_KEY',    env('S3_KEY'));
           define('S3_SECRET', env('S3_SECRET'));
           define('S3_REGION', 'eu-west-1');        // S3 region name: http://amzn.to/1FtPG6r
@@ -752,7 +752,7 @@ use Illuminate\Support\Facades\Route;
           $data = str_replace('{!! awscredential !!}', $credentials, $data);
           $data = str_replace('{!! awsdate !!}', $date, $data);
           $data = str_replace('{!! awsexpires !!}', $expires, $data);
-          $data = str_replace('{!! buckets !!}', json_encode(array('chevroux-fr')), $data);
+          $data = str_replace('{!! buckets !!}', json_encode(array('chevroux-fr', 'kfc-fr')), $data);
 
 
           $execptions = DB::table("company")->where("id", $company)->first();
