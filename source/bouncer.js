@@ -1191,17 +1191,21 @@
 	            load.call(this);
 			}).bind(this), (function() {
 				//change bucket
-				var currentIndex = 0;
-				for(var i = 0, l = this.that.buckets.length; i<l; i++) {
-					currentIndex++;
-					if(this.that.buckets[i] == this.that.currentBucket) {
-						break;
+				if(bucket != this.that.currentBucket) {
+					this.that.widgetLoad.call(this, this.that.currentBucket, querybackup);
+				} else {
+					var currentIndex = 0;
+					for(var i = 0, l = this.that.buckets.length; i<l; i++) {
+						currentIndex++;
+						if(this.that.buckets[i] == this.that.currentBucket) {
+							break;
+						}
 					}
-				}
 
-				if(currentIndex < this.that.buckets.length) {
-					this.that.currentBucket = this.that.buckets[currentIndex];
-					this.that.widgetLoad.call(this, this.that.currentBucket);
+					if(currentIndex < this.that.buckets.length) {
+						this.that.currentBucket = this.that.buckets[currentIndex];
+						this.that.widgetLoad.call(this, this.that.currentBucket, querybackup);
+					}
 				}
 			}).bind(this));
 		}).bind(this));
