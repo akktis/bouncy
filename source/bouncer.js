@@ -1133,11 +1133,11 @@
 				this.that.widgetLoad.call(this, this.that.currentBucket, querybackup);
 			}).bind({that : this, config : config}));
 		} else if(config.adbackEnabled) {
-			this.that.fire("queryMntzm", {
+			this.fire("queryMntzm", {
 				query : '?query='+this.widgetConvertQuery((querybackup === true ? config.querybackup :config.query))+'&apikey='+(config.apikey)+'&nb='+(config.number)+'&outof='+(config.outof)+'&sortBy='+(config.sortBy)+'&sortDir='+(config.sortDir)+'&countryCode='+(config.countryCode)+(config.customArgs),
 				callback : (function(data) {
 					this.that.widgetDisplay.call(this, data);
-				}).bind(this)
+				}).bind({that : this, config : config})
 			})
 		} else {
 			this.widgetLoad.call({that : this, config : config}, this.currentBucket, querybackup);
