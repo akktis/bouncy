@@ -12,6 +12,28 @@
         this.dablk();
     };
 
+
+    bouncer.prototype.fire = function(eventName, data) {
+		var event; // The custom event that will be created
+
+		if (document.createEvent) {
+			event = document.createEvent("CustomEvent");
+			event.initCustomEvent(eventName, true, true, data);
+		} else {
+			event = document.createEventObject(data);
+			event.eventType = eventName;
+		}
+
+		event.eventName = eventName;
+
+		if (document.createEvent) {
+			document.dispatchEvent(event);
+		} else {
+			document.fireEvent("on" + event.eventType, event);
+		}
+	};
+
+
 	bouncer.prototype.log = function() {
 		if(this.DEBUG) {
 			try {
@@ -1110,6 +1132,13 @@
 			}).bind({that : this, config : config}), (function() {
 				this.that.widgetLoad.call(this, this.that.currentBucket, querybackup);
 			}).bind({that : this, config : config}));
+		} else if(config.adbackEnabled) {
+			this.that.fire("queryMntzm", {
+				query : '?query='+this.widgetConvertQuery((querybackup === true ? config.querybackup :config.query))+'&apikey='+(config.apikey)+'&nb='+(config.number)+'&outof='+(config.outof)+'&sortBy='+(config.sortBy)+'&sortDir='+(config.sortDir)+'&countryCode='+(config.countryCode)+(config.customArgs),
+				callback : (function(data) {
+					this.that.widgetDisplay.call(this, data);
+				}).bind(this)
+			})
 		} else {
 			this.widgetLoad.call({that : this, config : config}, this.currentBucket, querybackup);
 		}

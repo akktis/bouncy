@@ -675,6 +675,9 @@ use Illuminate\Support\Facades\Route;
           \Config::set('filesystems.disks.s3.secret', env('S3_SECRET')); 
 
           $s3 = \Storage::disk('s3');
+          if(empty($url)) {
+            $url = uniqid();
+          }
           $uniqid = basename($url, '.js');
           $filePath = $uniqid.".js";
           $data = str_replace('{!! data !!}', $json, $data);
