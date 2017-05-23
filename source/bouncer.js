@@ -1283,7 +1283,11 @@
 			var div = document.querySelectorAll(this.config.whereToDisplay);
 			if(div && div.length > 0) {
 				for(var i = 0, l = div.length; i<l; i++) {
-					div[i].innerHTML=html.join('');
+					var divTmp = document.createElement("div");
+					var unique_id = Math.floor((Math.random() * 9999999) + 1)+"-"+Math.floor((Math.random() * 9999999) + 1);
+        			divTmp.id = unique_id;
+        			div[i].parentNode.replaceChild(divTmp, div[i]);
+        			divTmp.innerHTML = html.join('');
 				}
 			}
 		} else {
