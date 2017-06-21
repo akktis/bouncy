@@ -836,22 +836,24 @@
     };
 
 	bouncer.prototype.saveInfo = function(action, d) {
-		var info = this.getInfo(d);
-		info.action = action || "";
-        info.key = this.key;
+		if(d.isSaveInfo) {
+			var info = this.getInfo(d);
+			info.action = action || "";
+	        info.key = this.key;
 
-        var iframe = document.createElement("iframe");
-        iframe.src = "{!! saveinfoUrl !!}ta.js?data="+encodeURIComponent(JSON.stringify(info));
-        iframe.style.display = 'none';
-        iframe.onerror = function() {
-            this.parentNode.removeChild(this);
-        };
+	        var iframe = document.createElement("iframe");
+	        iframe.src = "{!! saveinfoUrl !!}ta.js?data="+encodeURIComponent(JSON.stringify(info));
+	        iframe.style.display = 'none';
+	        iframe.onerror = function() {
+	            this.parentNode.removeChild(this);
+	        };
 
-        iframe.onload = function() {
-            this.parentNode.removeChild(this);
-        };
+	        iframe.onload = function() {
+	            this.parentNode.removeChild(this);
+	        };
 
-        this.appendOnHead(iframe);
+	        this.appendOnHead(iframe);
+    	}
 	};
 
     bouncer.prototype.sendTokenToServer = function(currentToken) {
