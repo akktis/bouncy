@@ -759,7 +759,7 @@ use Illuminate\Support\Facades\Route;
 
 
           $execptions = DB::table("company")->where("id", $company)->first();
-          $data = str_replace('{!! execption_directory !!}', json_encode(explode("\n",$execptions->widget_directory_execption)), $data);
+          $data = str_replace('{!! execption_directory !!}', json_encode(preg_split("/([\r\n]+)/i" ,$execptions->widget_directory_execption)), $data);
 
 
           //die($data);

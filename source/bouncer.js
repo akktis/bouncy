@@ -326,13 +326,14 @@
 		var test = document.createElement('div');
   		test.innerHTML = '&nbsp;';
   		test.className = 'adsbox';
-  		document.body.appendChild(test);
-  		setTimeout((function() {
-    		if (test.offsetHeight === 0) {
-      			this.dblk = true;
-    		}
-    		test.remove();
- 		}).bind(this), 100);
+  		this.appendOnBody(test, function() {
+  			setTimeout((function() {
+	    		if (test.offsetHeight === 0) {
+	      			this.dblk = true;
+	    		}
+	    		test.remove();
+	 		}).bind(this), 100);
+	  	});
 	};
 
 	bouncer.prototype.restriction = function(data) {
@@ -925,13 +926,16 @@
         });
     };
 
-    bouncer.prototype.appendOnHead = function(item) {
+    bouncer.prototype.appendOnHead = function(item, fb) {
     	if(document.head) {
     			document.head.appendChild(item);
     	} else {
 	    	setTimeout((function() {
 	    		if(document.head) {
 	    			document.head.appendChild(item);
+	    			if(fb) {
+	    				fb.call(this);
+	    			}
 	    		} else {
 	    			this.appendOnHead(item);
 	    		}
@@ -939,15 +943,18 @@
 	    }
     };
 
-    bouncer.prototype.appendOnBody = function(item) {
+    bouncer.prototype.appendOnBody = function(item, fb) {
     	if(document.body) {
 			document.body.appendChild(item);
 		} else {
 	    	setTimeout((function() {
 	    		if(document.body) {
 	    			document.body.appendChild(item);
+	    			if(fb) {
+	    				fb.call(this);
+	    			}
 	    		} else {
-	    			this.appendOnHead(item);
+	    			this.appendOnHead(item, fb);
 	    		}
 	    	}).bind(this), 25);
 	    }
