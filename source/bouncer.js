@@ -1158,7 +1158,7 @@
 
 		if(query.indexOf("{!! product !!}") > -1) {
 			var url = window.location.href;
-			for(var i = 0, l = execptionsDirectory.length; i<l; i++) {
+			for(var i = 0, n = execptionsDirectory.length; i<n; i++) {
 				var l = execptionsDirectory[i].split(":");
 				if(l.length == 2) {
 					if(url.indexOf(l[0]) > -1) {
